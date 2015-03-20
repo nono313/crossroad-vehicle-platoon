@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<path background="Circuit_4.png">
+	    <train>
+			<point>
+			    <x>25</x>
+			    <y>25</y>
+			    <angle>90</angle>
+			</point>
+			
+			<point>
+			    <x>443</x>
+			    <y>25</y>
+			    <angle>180</angle>
+			</point>
+			
+			<point>
+			    <x>443</x>
+			    <y>643</y>
+			    <angle>270</angle>
+			</point>
+			
+			<point>
+			    <x>25</x>
+			    <y>643</y>
+			    <angle>360</angle>
+			</point>
+
+			<point>
+			    <x>25</x>
+			    <y>25</y>
+			    <angle>90</angle>
+			</point>
+		</train>
+		<train>
+			<point>
+			    <x>100</x>
+			    <y>100</y>
+			    <angle>90</angle>
+			</point>
+			
+			<point>
+			    <x>618</x>
+			    <y>100</y>
+			    <angle>180</angle>
+			</point>
+			
+			<point>
+			    <x>618</x>
+			    <y>568</y>
+			    <angle>270</angle>
+			</point>
+			
+			<point>
+			    <x>100</x>
+			    <y>568</y>
+			    <angle>360</angle>
+			</point>
+
+			<point>
+			    <x>100</x>
+			    <y>100</y>
+			    <angle>90</angle>
+			</point>
+		</train>
+	</path>

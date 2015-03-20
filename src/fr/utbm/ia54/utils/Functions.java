@@ -1,0 +1,112 @@
+package fr.utbm.ia54.utils;
+
+import java.util.HashMap;
+
+/**
+ * Utils functions class.
+ * @author Alexis
+ *
+ */
+public class Functions {
+
+	/**
+	 * true if x is between a and b, false otherwise
+	 * @param a
+	 * @param b
+	 * @param x
+	 * @return
+	 */
+	public static boolean between(int a, int b, int x) {
+		if(a<=b) {
+			if(x>=a && x<=b) {
+				return true;
+			}
+		} else {
+			if(x>=b && x<=a) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int manhattanCar(OrientedPoint a, OrientedPoint b) {
+		int distance = Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
+
+		if(distance > 32) {
+			distance -= 32;
+		} else {
+			distance = 1;
+		}
+		return distance;
+	}
+	
+	public static int manhattan(OrientedPoint a, OrientedPoint b) {
+		return (Math.abs(a.x-b.x)+ Math.abs(a.y-b.y));
+	}
+
+	public static boolean sEloigne(OrientedPoint other, OrientedPoint we) {
+		OrientedPoint tmp = new OrientedPoint(other);
+		
+		// we try to know if the other car is going away or comming, by comparing manhattan of actual pos and virtual one where the other car has moved forward
+		float actualM = manhattanCar(other, we);
+		if(tmp.orientation == 2*Math.PI || tmp.orientation == 0) {
+			tmp.y--;
+		} else if (tmp.orientation == Math.PI/2){
+			tmp.x++;
+		} else if (tmp.orientation == Math.PI){
+			tmp.y++;
+		} else{
+			tmp.x--;
+		}
+		
+		if(manhattanCar(tmp, we) > actualM) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean sApproche(OrientedPoint car, OrientedPoint tmpPos) {
+		return !sEloigne(car, tmpPos);
+	}
+
+	public static String closest(HashMap<String, OrientedPoint> list, OrientedPoint p) {
+		String closer = new String();
+		int manhC = -1;
+		if(list !=null) {
+			if (!list.isEmpty()) {
+				for(String it : list.keySet()) {
+					if(manhC < 0) {
+						closer = it;
+					} else if(manhattanCar(list.get(it), p) < manhattanCar(list.get(closer), p)) {
+						closer = it;
+					}
+				}
+				return closer;
+			}
+			return null;
+		}
+		return null;
+	}
+	
+	public static boolean estDerriere(OrientedPoint other, OrientedPoint we) {
+		//other is behind us if our moving coordinate > his corresponding coordinate
+		if((we.orientation == 2*Math.PI || we.orientation == 0) && we.y < other.y) {
+			return true;
+		} else if ((we.orientation == Math.PI) && we.y > other.y) {
+			return true;
+		} else if ((we.orientation == Math.PI/2) && we.x > other.x) {
+			return true;
+		} else if ((we.orientation == 3*Math.PI/2) && we.x < other.x) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}

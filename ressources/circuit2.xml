@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<path background="Circuit_2.png">
+	    <train>
+			<point>
+			    <x>-300</x>
+			    <y>-300</y>
+			    <angle>90</angle>
+			</point>
+			
+			<point>
+			    <x>0</x>
+			    <y>-300</y>
+			    <angle>180</angle>
+			</point>
+			
+			<point>
+			    <x>0</x>
+			    <y>300</y>
+			    <angle>90</angle>
+			</point>
+			
+			<point>
+			    <x>300</x>
+			    <y>300</y>
+			    <angle>360</angle>
+			</point>
+			
+			<point>
+			    <x>300</x>
+			    <y>0</y>
+			    <angle>270</angle>
+			</point>
+			
+			<point>
+			    <x>-300</x>
+			    <y>0</y>
+			    <angle>360</angle>
+			</point>
+			
+			<point>
+			    <x>-300</x>
+			    <y>-300</y>
+			    <angle>90</angle>
+			</point>
+		</train>
+		
+	    <train>
+			<point>
+			    <x>300</x>
+			    <y>300</y>
+			    <angle>360</angle>
+			</point>
+			
+			<point>
+			    <x>300</x>
+			    <y>0</y>
+			    <angle>270</angle>
+			</point>
+			
+			<point>
+			    <x>-300</x>
+			    <y>0</y>
+			    <angle>360</angle>
+			</point>
+		</train>
+	</path>
