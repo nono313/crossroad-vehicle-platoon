@@ -30,4 +30,5 @@ public class Const {
     /* Application settings */
     public static final String RESOURCES_DIR = "ressources";
     public static final int CAR_SIZE= 32;
+    public static final String CAR_COLOR[] = {"voiture_verte.png", "voiture_blanche.png", "voiture_rouge.png"};
 }
