@@ -78,6 +78,17 @@ public class Environment extends Agent{
 						
 						// If the first car is near a cross and if her train isn't registered for the cross
 						if(Functions.manhattan(carPos,cross) < 300 && !groups.contains(carGroup)){
+							
+							//we add he train to the cross and alert him
+							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+							tmp.put("crossing", cross);
+							
+							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
+							groups.add(carGroup);
+							map.put(cross,groups);
+							
+							/*
 							// If there is already an other train
 							if(!groups.isEmpty()){
 								// Get the list of cars which doesn't reach the cross
@@ -110,7 +121,7 @@ public class Environment extends Agent{
 							
 							// Register the group for the cross
 							groups.add(carGroup);
-							map.put(cross,groups);
+							map.put(cross,groups);*/
 						}
 						
 						// Get informations about the last car in the group

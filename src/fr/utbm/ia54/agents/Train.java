@@ -1,5 +1,6 @@
 package fr.utbm.ia54.agents;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import fr.utbm.ia54.consts.Const;
@@ -130,8 +131,29 @@ public class Train extends Agent {
 			} 
 			else if (m instanceof ObjectMessage) {
 				@SuppressWarnings("unchecked")
-				ObjectMessage<LinkedList<OrientedPoint>> message = (ObjectMessage<LinkedList<OrientedPoint>>) m;
-				prepareCrossing(message.getContent());
+				Object o = ((ObjectMessage) m).getContent();
+				if (o.getClass().equals(new HashMap<String,OrientedPoint>().getClass())) {
+					HashMap<String,OrientedPoint> dataRetrieved = (HashMap<String, OrientedPoint>) o;
+					for(String i : dataRetrieved.keySet()) {
+						if(i.equals("crossing")) {
+							
+							//warn other trains
+						} else if (i.equals("")) {
+							//another train come into a crossing
+							
+							//if we are into the crossing (or coming to it)
+							//we adapt our own speed and crossing distance, and warn the other train
+							
+						} else if (i.equals("")) {
+							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
+							
+							
+						}
+					}
+				} else if (o.getClass().equals(new LinkedList<OrientedPoint>().getClass())) {
+					ObjectMessage<LinkedList<OrientedPoint>> message = (ObjectMessage<LinkedList<OrientedPoint>>) m;
+					prepareCrossing(message.getContent());
+				}
 			}
 		}
 	}

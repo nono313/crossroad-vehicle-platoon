@@ -26,14 +26,18 @@ import fr.utbm.ia54.utils.RotateLabel;
 public class Car extends Agent {
 
 	private OrientedPoint pos;
+	
 	private Float vToReach;
 	private int safeD;
+	private int crossingD;
 	private int seeD;
-	private RotateLabel icone;
+	
 	private String group;
 	private int position;
-	private CarPath carPath;
 	private int numTrain;
+	
+	private RotateLabel icone;
+	private CarPath carPath;
 	private HashMap<String, OrientedPoint> knownCars;
 	private Queue<String> crossCars;
 	private HashMap<String, Boolean> crossCarStatus;
@@ -135,6 +139,10 @@ public class Car extends Agent {
 				closer = Functions.closest(neighbours, tmpPos);
 				closerPos = neighbours.get(closer);
 
+			//we have to consider different safeD according to the train of the car.	
+				
+				
+				
 				/* CROSSING */
 				if(crossCars.peek() != null && crossCars.peek().equals(closer)) {
 					// check for priority
@@ -201,6 +209,7 @@ public class Car extends Agent {
 						crossing = false;
 					}
 				}
+				//we know this car's ancient position, and we have to let her pass => adapting speed
 				if(!priority && crossing) {
 					if(knownCars.containsKey(closer)) {
 						ArrayList<OrientedPoint> crossings = carPath.getCrossingNear(tmpPos, seeD);
@@ -401,10 +410,12 @@ public class Car extends Agent {
 				else if(data[0].equals("safe")) {
 					safeD = Integer.valueOf(data[1]);
 					seeD = 3*safeD;
-				} 
+				} // est-ce encore utile ??
 				else if (data[0].equals("crossing")) {
 					crossCars.add(data[2].substring(0, message.getReceiver().getAgentNetworkID().length()-2));
 					crossCarStatus.put(data[2].substring(0, message.getReceiver().getAgentNetworkID().length()-2), Boolean.valueOf(data[1]));
+				} else if (data[0].equals("crossD")) {
+					crossingD = Integer.valueOf(data[1]);
 				}
 			}
 		}
