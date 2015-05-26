@@ -144,8 +144,7 @@ public class Car extends Agent {
 	
 					closer = Functions.closest(emergencies, tmpPos);
 					place =  Functions.manhattanCar(tmpPos, emergencies.get(closer));
-					//32 is the car size, it's a margin
-					slowD = (safeD - place) -32;
+					slowD = (safeD - place) -Const.CAR_SIZE;
 					// what we have to deccelerate
 					toSlowV = slowD / (Const.PAS/1000.f);
 				} 
@@ -376,7 +375,8 @@ public class Car extends Agent {
 	
 	public void addCar(){
 		/* Car representation */
-		ImageIcon car = new ImageIcon("ressources/voiture_verte.png");
+		int carColor = Math.random() * Const.CAR_COLOR.size();
+		ImageIcon car = new ImageIcon(Const.RESOURCES_DIR+"/"+Const.CAR_COLOR[carColor]);
 		icone = new RotateLabel(car);
    		icone.setBounds(0,0,Const.CAR_SIZE, Const.CAR_SIZE);
    		icone.setLocation(pos.x, pos.y);
