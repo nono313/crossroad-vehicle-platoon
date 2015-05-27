@@ -142,11 +142,15 @@ public class Car extends Agent {
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				if(emergencies != null && !emergencies.isEmpty()) {
 	
-					closer = Functions.closest(emergencies, tmpPos);
+					/*closer = Functions.closest(emergencies, tmpPos);
 					place =  Functions.manhattanCar(tmpPos, emergencies.get(closer));
 					slowD = (safeD - place) -Const.CAR_SIZE;
 					// what we have to deccelerate
-					toSlowV = slowD / (Const.PAS/1000.f);
+					toSlowV = slowD / (Const.PAS/1000.f);*/
+					newV=0;
+					toSlowV=0;
+					distance=0;
+					tmpPos=pos;
 				} 
 				else {
 					//no car "emergencies", which would be too close for safety purposes
@@ -252,27 +256,6 @@ public class Car extends Agent {
 									else {
 										toSlowV = (float) (2*Math.abs(pos.getSpeed() - (slowD / timeLeft)));
 									}
-									/*
-									// we slow down as much as possible
-									if (Const.DECC * (Const.PAS/1000.f) > toSlowV) {
-										// we can slow down as much as we need
-										newV -= toSlowV;
-									} 
-									else {
-										// we slow the max we can and hope for the best
-										newV -= Const.DECC * (Const.PAS/1000.f);
-									}
-									
-									// we avoid going backward
-									if(newV > 0) {
-										distance = newV*(Const.PAS/1000.f);
-										tmpPos = carPath.getNextPoint(pos, distance, numTrain);
-									} 
-									else {
-										newV = 0;
-										distance = 0;
-										tmpPos = pos;
-									}*/
 								}
 							}
 						}
@@ -280,73 +263,41 @@ public class Car extends Agent {
 					
 	/* NON-CROSSING ********************************************/
 					if (!crossing) {
-						/*emergencies = inRange(tmpPos, safeD, neighbours);
-						if(emergencies != null && !emergencies.isEmpty()) {
-	
-							closer = Functions.closest(emergencies, tmpPos);
-							place =  Functions.manhattanCar(tmpPos, emergencies.get(closer));
-							slowD = (safeD - place);
-							// what we have to deccelerate
-							toSlowV = slowD / (Const.PAS/1000.f);
-						} 
-						else {*/
-							/* WARNINGS */
-							// if first one stable, warn about next */
-							closer = null;
-							int oldD = 0;
-							int newD = 0;
+						// if first one stable, warn about next */
+						closer = null;
+						int oldD = 0;
+						int newD = 0;
+						do {
+							// search for a registered car
 							do {
-								// search for a registered car
-								do {
-									neighbours.remove(closer);
-									closer = Functions.closest(neighbours, tmpPos);
-								} while(!knownCars.containsKey(closer) && !neighbours.isEmpty());
-								// we take the closest who is getting closer
-								if(!neighbours.isEmpty()) {
-									oldD = Functions.manhattanCar(knownCars.get(closer), pos);
-									newD = Functions.manhattanCar(neighbours.get(closer), tmpPos);
-								}
-							} while(oldD == newD && !neighbours.isEmpty());
-							
-							if(!neighbours.isEmpty()){
-								// the purpose is to be at the same speed when we reach safeD
-								
-								if(oldD > newD) {
-									float diffV = (oldD - newD - 1)/(Const.PAS/1000.f);
-									float margeT = (newD-2*safeD)/newV;
-									
-									int nbEtapes = (int) (margeT/Const.PAS);
-									if(nbEtapes <=0) {
-										nbEtapes=1;
-									}
-									toSlowV = Math.abs((diffV/nbEtapes)-newV);
-								} 
-								else {
-									toSlowV = 0;
-								}
+								neighbours.remove(closer);
+								closer = Functions.closest(neighbours, tmpPos);
+							} while(!knownCars.containsKey(closer) && !neighbours.isEmpty());
+							// we take the closest who is getting closer
+							if(!neighbours.isEmpty()) {
+								oldD = Functions.manhattanCar(knownCars.get(closer), pos);
+								newD = Functions.manhattanCar(neighbours.get(closer), tmpPos);
 							}
-						//} // no emergencies
-						/*
-						// we slow down as much as possible
-						if (Const.DECC * (Const.PAS/1000.f) > toSlowV) {
-							// we can slow down as much as we need
-							newV -= toSlowV;
-						} 
-						else {
-							// we slow the max we can and hope for the best
-							newV -= Const.DECC * (Const.PAS/1000.f);
+						} while(oldD == newD && !neighbours.isEmpty());
+						
+						if(!neighbours.isEmpty()){
+							// the purpose is to be at the same speed when we reach safeD
+							
+							if(oldD > newD) {
+								float diffV = (oldD - newD - 1)/(Const.PAS/1000.f);
+								float margeT = (newD-2*safeD)/newV;
+								
+								int nbEtapes = (int) (margeT/Const.PAS);
+								if(nbEtapes <=0) {
+									nbEtapes=1;
+								}
+								toSlowV = Math.abs((diffV/nbEtapes)-newV);
+							} 
+							else {
+								toSlowV = 0;
+							}
 						}
 						
-						// we avoid going backward
-						if(newV > 0) {
-							distance = newV*(Const.PAS/1000.f);
-							tmpPos = carPath.getNextPoint(pos, distance, numTrain);
-						} 
-						else {
-							newV = 0;
-							distance = 0;
-							tmpPos = pos;
-						}*/
 					}
 					knownCars = tmpKnownCars;				
 				}//no emergencies
@@ -375,7 +326,7 @@ public class Car extends Agent {
 	
 	public void addCar(){
 		/* Car representation */
-		int carColor = Math.random() * Const.CAR_COLOR.size();
+		int carColor = (int) (Math.random() * Const.CAR_COLOR.length);
 		ImageIcon car = new ImageIcon(Const.RESOURCES_DIR+"/"+Const.CAR_COLOR[carColor]);
 		icone = new RotateLabel(car);
    		icone.setBounds(0,0,Const.CAR_SIZE, Const.CAR_SIZE);
