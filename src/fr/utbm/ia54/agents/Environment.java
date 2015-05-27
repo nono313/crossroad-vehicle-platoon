@@ -24,6 +24,7 @@ public class Environment extends Agent{
 	private HashMap<String, OrientedPoint> positions;
 	private HashMap<String, AgentAddress> addresses;
 	private List<List<String>> carsId; // List of car's networkId (one list by train)
+	private Integer BeaconRange;
 
 	/**
 	 * This is the first activated behavior in the life cycle of a MaDKit agent.
@@ -35,6 +36,7 @@ public class Environment extends Agent{
 		addresses = new HashMap<String, AgentAddress>();
 		carsId = new ArrayList<List<String>>();
 		String group = new String();
+		BeaconRange = 300;
 		
 		for(int i=0; i<Const.NB_TRAIN;i++) {
 			group = Const.SIMU_GROUP+i;
@@ -45,8 +47,9 @@ public class Environment extends Agent{
 
 	@Override
     protected void live() {
-		HashMap<OrientedPoint, List<String>> map = new HashMap<OrientedPoint, List<String>>(); // List of groups on a crossing
+		HashMap<OrientedPoint, List<String>> map = new HashMap<OrientedPoint, List<String>>(); // List of trains by crossing
 		int nb = 0;
+		CarPath carPath = MainProgram.getCarPath();
 		
 		// Waiting for car initialization
 		while(nb != carsId.size()*Const.NB_CAR_BY_TRAIN) {
@@ -57,10 +60,57 @@ public class Environment extends Agent{
 			}
 		}
 		
+		
+		/*Here we simulate the environment with beaconised's crossings
+		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
+		  
+		  To avoid sending the message every turn until the car passed the crossing,
+		  we keep a list of train by crossing. To update that list we check if the last car passed the crossing
+		  At that time we also inform the train, so it can return to usual speed and distance orders
+		  
+		  IMPROVEMENT : IRL only cars have sensors, so the first car should recieve the event,
+		  and send it to its train
+		  */
 		while(true) {
 			getNewMessages();
+			
+			for(OrientedPoint cross : carPath.getCrossing()){
+				// Get the trains which are on the cross
+				List<String> groups = map.get(cross);
+				if(groups == null){
+					groups = new ArrayList<>();
+				}
+				
+				// For all trains
+				for(int i=0; i<carsId.size();i++){
+					String carGroup = Const.SIMU_GROUP + String.valueOf(i);
+					
+					//if the train is checked in, we verify it's still in
+					if(groups.contains(carGroup)) {
+						String lastCarId = carsId.get(i).get(carsId.get(i).size()-1);
+						carPos = positions.get(lastCarId);
+
+						if(crossPassed(carPos,cross))
+							groups.remove(groups.indexOf(carGroup));
+					}
+					else {// otherwise we check if it's entering the crossing
+						String firstCarId = carsId.get(i).get(0);
+						OrientedPoint carPos = positions.get(firstCarId);
+						
+						if(Functions.manhattan(carPos,cross) < BeaconRange && carPath.isCrossing(carPos,cross)){
+							//we add he train to the cross and alert him
+							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+							tmp.put("crossing", cross);
+							
+							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
+							groups.add(carGroup);
+							map.put(cross,groups);
+						}
+					}
+			
+			/*
 			if(!carsId.isEmpty()){
-				CarPath carPath = MainProgram.getCarPath();
 				// For all crossing point
 				for(OrientedPoint cross : carPath.getCrossing()){
 					// Get the trains which are on the cross
@@ -88,7 +138,7 @@ public class Environment extends Agent{
 							groups.add(carGroup);
 							map.put(cross,groups);
 							
-							/*
+							
 							// If there is already an other train
 							if(!groups.isEmpty()){
 								// Get the list of cars which doesn't reach the cross
@@ -96,7 +146,7 @@ public class Environment extends Agent{
 								cars.add(cross);
 								
 								// List of cars which doesn't reach the cross (other train)
-								int otherGroup = (i==0?1:0); // Warning, work only for 2 trains
+								int otherGroup = (i==0?1:0); // TODO, work only for 2 trains
 								@SuppressWarnings("unused")
 								String otherGroupStr = String.valueOf(otherGroup);
 								String otherCarId = "";
@@ -121,7 +171,7 @@ public class Environment extends Agent{
 							
 							// Register the group for the cross
 							groups.add(carGroup);
-							map.put(cross,groups);*/
+							map.put(cross,groups);
 						}
 						
 						// Get informations about the last car in the group
@@ -135,7 +185,7 @@ public class Environment extends Agent{
 						}
 					}
 				}
-			}
+			}*/
 		}
 	}
 	
@@ -221,27 +271,27 @@ public class Environment extends Agent{
 	}
 	
 	/**
-	 * Used for the last car in a train
+	 * Does the car 
 	 * @param car
 	 * @param cross
 	 * @return
 	 */
 	public boolean crossPassed(OrientedPoint car, OrientedPoint cross){
-		if(Math.toDegrees(car.getAngle()) == 90){ 			// Right
+		if(Math.toDegrees(car.getAngle()) == 90){ 		// Right
 			if(car.y == cross.y)
-				return (car.x > cross.x) ? true:false;
+				return (car.x - Const.CAR_SIZE > cross.x) ? true:false;
 		}
 		else if(Math.toDegrees(car.getAngle()) == 180){ 	// Down
 			if(car.x == cross.x)
-				return (car.y > cross.y) ? true:false;
+				return (car.y - Const.CAR_SIZE > cross.y) ? true:false;
 		}
 		else if(Math.toDegrees(car.getAngle()) == 270){ 	// Left
 			if(car.y == cross.y)
-				return (car.x < cross.x) ? true:false;
+				return (car.x + Const.CAR_SIZE < cross.x) ? true:false;
 		}
-		else{ 												// Up
+		else{ 							// Up
 			if(car.x == cross.x)
-				return (car.y < cross.y) ? true:false;
+				return (car.y + Const.CAR_SIZE < cross.y) ? true:false;
 		}
 		return false;
 	}
