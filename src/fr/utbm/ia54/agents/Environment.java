@@ -94,9 +94,16 @@ public class Environment extends Agent{
 					if(groups.contains(carGroup)) {
 						carId = carsId.get(i).get(carsId.get(i).size()-1);
 						carPos = positions.get(carId);
-
-						if(crossPassed(carPos,cross))
+						
+						if(crossPassed(carPos,cross)) {
 							groups.remove(groups.indexOf(carGroup));
+							
+							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+							tmp.put("exitCrossing", cross);
+							
+							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
+						}
 					}
 					else {// otherwise we check if it's entering the crossing
 						carId = carsId.get(i).get(0);
