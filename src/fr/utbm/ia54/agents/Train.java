@@ -18,24 +18,35 @@ import madkit.message.StringMessage;
 public class Train extends Agent {
 	
 	private float speed;
+	private float crossingSpeed;
 	private int safeD;
+	private int crossingSafeD;
+	
 	private Car[] cars;
 	private String group;
+	private int numTrain;
+	
 	private int count; // Timer
 	
-	/**
-	 * This is the first activated behavior in the life cycle of a MaDKit agent.
-	 */
+	private list<OrientedPoint> soloCrossing;
+	private list<OrientedPoint> notAloneCrossing;
+	
 	@Override
 	protected void activate() {
 		// initialization
-		speed = 130;
-		safeD = Const.CAR_SIZE;
-		cars = new Car[Const.NB_CAR_BY_TRAIN];
-		int numTrain = 0;
-		count = -1;
-		group = Const.SIMU_GROUP+numTrain;
+		speed = 120;
+		crossingSpeed = 60;
+		safeD = 2*Const.CAR_SIZE;
+		crossingSafeD = 4*Const.CAR_SIZE;
 		
+		cars = new Car[Const.NB_CAR_BY_TRAIN];
+		numTrain = 0;
+		
+		count = -1;
+		soloCrossing = new ArrayList<OrientedPoint>();
+		notAloneCrossing = new ArrayList<OrientedPoint>();
+		
+		group = Const.SIMU_GROUP+numTrain;
 		while(getAgentsWithRole( Const.MY_COMMUNITY, group, Const.TRAIN_ROLE) != null) {
 			numTrain++;
 			group = Const.SIMU_GROUP+numTrain;
@@ -44,13 +55,6 @@ public class Train extends Agent {
         requestRole(Const.MY_COMMUNITY, group, Const.TRAIN_ROLE);
 	}
 
-	/**
-	 * This is the second behavior which is activated, i.e. when activate ends.
-	 * It actually implements the life of the agent.
-	 * It is usually a while true loop.
-	 * Here the agent lives 10 seconds and quits.
-	 * 
-	 */
 	@Override
 	protected void live() {
 
@@ -77,27 +81,17 @@ public class Train extends Agent {
 		
 		while(true) {
 			getNewMessages();
-			if(count > 0) {
-				// Decrease the timer
-				count--;
-			} 
-			else if(count == 0) {
-				// If timeout, send default simulation parameters
-				count = -1;
-				broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("speed:"+speed));
-			}
+			/*All behaviours in train are related to communication, 
+			
+			TODO deal with multiple train
+			TODO deal with train following eachother
+			*/
 			pause(Const.PAS);
 		}
 	}
 
-	/**
-	 * This behavior is called when the agent has finished its live behavior.
-	 * Because there is no other agent, MaDKit quits when the agent is terminated.
-	 * 
-	 */
 	@Override
 	protected void end() {
-		// Nothing to do
 	}
 
 	public float getSpeed() {
@@ -136,18 +130,46 @@ public class Train extends Agent {
 					HashMap<String,OrientedPoint> dataRetrieved = (HashMap<String, OrientedPoint>) o;
 					for(String i : dataRetrieved.keySet()) {
 						if(i.equals("crossing")) {
+							soloCrossing.add(dataRetrieved.get(i));
 							
-							//warn other trains
-						} else if (i.equals("")) {
+							// call other trains, if they respond they are in range (comming to the crossing)
+							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+							tmp.put("warningCrossing", dataRetrieved.get(i));
+							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+							//TODO broadcast message
+							int idOtherTrain =(numTrain==0) ? 1:0;
+							sendMessage(Const.MY_COMMUNITY, idOtherTrain, Const.TRAIN_ROLE, msg);
+						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
+							if(soloCrossing.contain(dataRetrieved.get(i)) {
+								notAloneCrossing.add(dataRetrieved.get(i));
+								changeCarsBehavior(new ObjectMessage<string>("speed:"+crossingSpeed));
+								changeCarsBehavior(new ObjectMessage<string>("safeD:"+crossingSafeD));
+								
+								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+								tmp.put("confirmCrossing", dataRetrieved.get(i));
+								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+								//TODO send the message to m.get sender
+								int idOtherTrain =(numTrain==0) ? 1:0;
+								sendMessage(Const.MY_COMMUNITY, idOtherTrain, Const.TRAIN_ROLE, msg);
+							}
 							
-						} else if (i.equals("")) {
+						} else if (i.equals("confirmCrossing")) {
 							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
-							
-							
+							if(soloCrossing.contain(dataRetrieved.get(i)) {
+								notAloneCrossing.add(dataRetrieved.get(i));
+							changeCarsBehavior(new ObjectMessage<string>("speed:"+crossingSpeed));
+							changeCarsBehavior(new ObjectMessage<string>("safeD:"+crossingSafeD));
+							}
+						} else if (i.equals("exitCrossing")) {
+							//we have left the crossing, return to normal state
+							soloCrossing.remove(dataRetrieved.get(i));
+							notAloneCrossing.remove(dataRetrieved.get(i));
+							changeCarsBehavior(new ObjectMessage<string>("speed:"+speed));
+							changeCarsBehavior(new ObjectMessage<string>("safeD:"+safeD));
 						}
 					}
 				} else if (o.getClass().equals(new LinkedList<OrientedPoint>().getClass())) {
@@ -201,5 +223,10 @@ public class Train extends Agent {
 			count = (int) (optimalTime*1000/Const.PAS);
 			broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("speed:"+adjustSpeed));
 		}
+	}
+	
+	
+	private void changeCarBehavior(ObjectMessage data) {
+		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data);
 	}
 }
