@@ -286,4 +286,73 @@ public class CarPath {
 	public void setCrossing(List<OrientedPoint> crossing) {
 		this.crossing = crossing;
 	}
+
+	/**
+	 * Return true if point is in the path of the car, defined by it's train.
+	 * If distance is defined (!=-1), point have to be closer than distance from carPos (moving along the circuit)
+	 * @param carPos
+	 * @param train
+	 * @param point
+	 * @param distance
+	 * @return
+	 */
+	public boolean isInPath(OrientedPoint carPos, int train, OrientedPoint point, int distance) {
+		Iterator<OrientedPoint> it = path.get(train).iterator();
+		Iterator<OrientedPoint> itbis = path.get(train).iterator();
+		boolean found = false;
+		boolean foundCar = false;
+		OrientedPoint previousP = null;
+		OrientedPoint p = null;
+		
+		// for now we suppose the car is on the road, and we try to find it (between 2 points/corners)
+		while(it.hasNext() && !foundCar) {
+			p = it.next();
+			// we check if the actual position is between supposedP and p
+			if (previousP != null) {
+				if((carPos.x == p.x && Functions.between(previousP.y,p.y,carPos.y))
+						|| (carPos.y == p.y && Functions.between(previousP.x,p.x,carPos.x))) {
+					//we found where the car was in the circuit
+					foundCar = true;
+					previousP = carPos;
+				}
+			}
+			if(!foundCar)
+				previousP = p;
+		}
+		
+		if(foundCar) {
+			//we check in front of the car, within a distance.
+			{
+				// we check if the actual position is between supposedP and p
+				if (previousP != null) {
+					if((point.x == p.x && Functions.between(previousP.y,p.y,point.y))
+							|| (point.y == p.y && Functions.between(previousP.x,p.x,point.x))) {
+						//we found where the car was in the circuit
+						found = true;
+						if(distance>0) {
+							distance -= Functions.manhattan(previousP, point);
+							if(distance < 0){
+								distance=0;
+								found = false;
+							}
+								
+						}
+					}
+				}
+				//update distance
+				
+				if(distance>0) {
+					distance -= Functions.manhattan(previousP, p);
+					if(distance < 0)
+						distance=0;
+				}
+				
+				previousP = p;
+				p = it.next();
+				if(!it.hasNext())
+					it=itbis;
+			}while(it.hasNext() && !found && distance >0);
+		}
+		return found;
+	}
 }

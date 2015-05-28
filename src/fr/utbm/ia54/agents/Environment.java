@@ -24,7 +24,7 @@ public class Environment extends Agent{
 	private HashMap<String, OrientedPoint> positions;
 	private HashMap<String, AgentAddress> addresses;
 	private List<List<String>> carsId; // List of car's networkId (one list by train)
-	private Integer BeaconRange;
+	private Integer beaconRange;
 
 	/**
 	 * This is the first activated behavior in the life cycle of a MaDKit agent.
@@ -36,7 +36,7 @@ public class Environment extends Agent{
 		addresses = new HashMap<String, AgentAddress>();
 		carsId = new ArrayList<List<String>>();
 		String group = new String();
-		BeaconRange = 300;
+		beaconRange = 300;
 		
 		for(int i=0; i<Const.NB_TRAIN;i++) {
 			group = Const.SIMU_GROUP+i;
@@ -72,32 +72,37 @@ public class Environment extends Agent{
 		  and send it to its train
 		  */
 		while(true) {
+			List<String> groups;
+			OrientedPoint carPos;
+			String carGroup;
+			String carId;
+			
 			getNewMessages();
 			
 			for(OrientedPoint cross : carPath.getCrossing()){
 				// Get the trains which are on the cross
-				List<String> groups = map.get(cross);
+				groups = map.get(cross);
 				if(groups == null){
 					groups = new ArrayList<>();
 				}
 				
 				// For all trains
 				for(int i=0; i<carsId.size();i++){
-					String carGroup = Const.SIMU_GROUP + String.valueOf(i);
+					carGroup = Const.SIMU_GROUP + String.valueOf(i);
 					
 					//if the train is checked in, we verify it's still in
 					if(groups.contains(carGroup)) {
-						String lastCarId = carsId.get(i).get(carsId.get(i).size()-1);
-						carPos = positions.get(lastCarId);
+						carId = carsId.get(i).get(carsId.get(i).size()-1);
+						carPos = positions.get(carId);
 
 						if(crossPassed(carPos,cross))
 							groups.remove(groups.indexOf(carGroup));
 					}
 					else {// otherwise we check if it's entering the crossing
-						String firstCarId = carsId.get(i).get(0);
-						OrientedPoint carPos = positions.get(firstCarId);
+						carId = carsId.get(i).get(0);
+						carPos = positions.get(carId);
 						
-						if(Functions.manhattan(carPos,cross) < BeaconRange && carPath.isCrossing(carPos,cross)){
+						if(Functions.manhattan(carPos,cross) < beaconRange && carPath.isInPath(carPos, i, cross, beaconRange)){
 							//we add he train to the cross and alert him
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("crossing", cross);
@@ -108,6 +113,7 @@ public class Environment extends Agent{
 							map.put(cross,groups);
 						}
 					}
+				}
 			
 			/*
 			if(!carsId.isEmpty()){
@@ -184,8 +190,8 @@ public class Environment extends Agent{
 							groups.remove(groups.indexOf(carGroup));
 						}
 					}
-				}
-			}*/
+				}*/
+			}
 		}
 	}
 	
