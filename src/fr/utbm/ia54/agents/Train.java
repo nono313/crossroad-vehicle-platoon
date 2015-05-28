@@ -1,7 +1,9 @@
 package fr.utbm.ia54.agents;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import fr.utbm.ia54.consts.Const;
 import fr.utbm.ia54.utils.Functions;
@@ -28,8 +30,8 @@ public class Train extends Agent {
 	
 	private int count; // Timer
 	
-	private list<OrientedPoint> soloCrossing;
-	private list<OrientedPoint> notAloneCrossing;
+	private List<OrientedPoint> soloCrossing;
+	private List<OrientedPoint> notAloneCrossing;
 	
 	@Override
 	protected void activate() {
@@ -138,38 +140,38 @@ public class Train extends Agent {
 							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
 							//TODO broadcast message
 							int idOtherTrain =(numTrain==0) ? 1:0;
-							sendMessage(Const.MY_COMMUNITY, idOtherTrain, Const.TRAIN_ROLE, msg);
+							sendMessage(Const.MY_COMMUNITY, Const.SIMU_GROUP+idOtherTrain, Const.TRAIN_ROLE, msg);
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
-							if(soloCrossing.contain(dataRetrieved.get(i)) {
+							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));
-								changeCarsBehavior(new ObjectMessage<string>("speed:"+crossingSpeed));
-								changeCarsBehavior(new ObjectMessage<string>("safeD:"+crossingSafeD));
+								changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
+								changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
 								
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
 								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
 								//TODO send the message to m.get sender
 								int idOtherTrain =(numTrain==0) ? 1:0;
-								sendMessage(Const.MY_COMMUNITY, idOtherTrain, Const.TRAIN_ROLE, msg);
+								sendMessage(m.getSender(), msg);
 							}
 							
 						} else if (i.equals("confirmCrossing")) {
 							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
-							if(soloCrossing.contain(dataRetrieved.get(i)) {
+							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));
-							changeCarsBehavior(new ObjectMessage<string>("speed:"+crossingSpeed));
-							changeCarsBehavior(new ObjectMessage<string>("safeD:"+crossingSafeD));
+							changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
+							changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
 							}
 						} else if (i.equals("exitCrossing")) {
 							//we have left the crossing, return to normal state
 							soloCrossing.remove(dataRetrieved.get(i));
 							notAloneCrossing.remove(dataRetrieved.get(i));
-							changeCarsBehavior(new ObjectMessage<string>("speed:"+speed));
-							changeCarsBehavior(new ObjectMessage<string>("safeD:"+safeD));
+							changeCarBehavior(new ObjectMessage<String>("speed:"+speed));
+							changeCarBehavior(new ObjectMessage<String>("safeD:"+safeD));
 						}
 					}
 				} else if (o.getClass().equals(new LinkedList<OrientedPoint>().getClass())) {
