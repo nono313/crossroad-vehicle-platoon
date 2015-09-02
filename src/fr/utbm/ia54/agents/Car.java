@@ -141,16 +141,10 @@ public class Car extends Agent {
 /* EMERGENCIES **********************************************************/
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				if(emergencies != null && !emergencies.isEmpty()) {
-	
-					/*closer = Functions.closest(emergencies, tmpPos);
-					place =  Functions.manhattanCar(tmpPos, emergencies.get(closer));
-					slowD = (safeD - place) -Const.CAR_SIZE;
-					// what we have to deccelerate
-					toSlowV = slowD / (Const.PAS/1000.f);*/
-					newV=0;
-					toSlowV=0;
-					distance=0;
-					tmpPos=pos;
+
+					newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
+					distance = newV*(Const.PAS/1000.f);
+					tmpPos = carPath.getNextPoint(pos, distance, numTrain);
 				} 
 				else {
 					//no car "emergencies", which would be too close for safety purposes
@@ -160,6 +154,22 @@ public class Car extends Agent {
 				//we have to consider different safeD according to the train of the car.
 					
 /* CROSSING *******************************************************************************/
+				//TODO multi trains	
+				/*	un voisin le plus proche pour train interne, ajuster à safeD
+					
+					pour le croisement, si priorité : roule;
+					                    sinon, ajuster pour safeD une fois la voiture sortie du crossing
+					                    
+					selectionner plus basse vitesse                    
+					
+					*/
+					
+					
+					//isInMyTrain();
+					
+					
+					
+					
 					if(crossCars.peek() != null && crossCars.peek().equals(closer)) {
 						// check for priority
 						priority = crossCarStatus.get(closer);
@@ -363,7 +373,7 @@ public class Car extends Agent {
 				if(data[0].equals("speed")) {
 					vToReach = Float.valueOf(data[1]);
 					// correction for train fusion
-					vToReach += (0.05f*position*vToReach);
+					vToReach += (0.01f*position*vToReach);
 
 				}
 				else if(data[0].equals("safe")) {
@@ -375,7 +385,7 @@ public class Car extends Agent {
 					crossCarStatus.put(data[2].substring(0, message.getReceiver().getAgentNetworkID().length()-2), Boolean.valueOf(data[1]));
 				} else if (data[0].equals("crossD")) {
 					crossingD = Integer.valueOf(data[1]);
-				}
+				} 
 			}
 		}
 	}
@@ -461,5 +471,10 @@ public class Car extends Agent {
 
 	public void setPos(OrientedPoint pos) {
 		this.pos = pos;
+	}
+	
+	public int timeToCross(OrientedPoint goal, OrientedPoint start) {
+		int toRun = Functions.manhattan(start, goal);
+		return (int) (toRun/pos.speed);
 	}
 }

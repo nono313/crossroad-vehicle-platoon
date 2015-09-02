@@ -154,7 +154,6 @@ public class Train extends Agent {
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
 								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
-								//TODO send the message to m.get sender
 								int idOtherTrain =(numTrain==0) ? 1:0;
 								sendMessage(m.getSender(), msg);
 							}

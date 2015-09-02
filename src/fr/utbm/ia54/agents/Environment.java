@@ -329,4 +329,27 @@ public class Environment extends Agent{
 			return (car.y < cross.y) ? true:false;
 		}
 	}
+	
+	
+	public boolean isInMyTrain(String me, String neighbour) {
+		boolean isInTrain = false;
+		int trainCounter = 1;
+		int carTrain = 0;
+		int otherCarTrain = 0;
+		for (List<String> i: carsId) {
+			trainCounter++;
+			for(String j: i) {
+				if (j == me)
+					carTrain = trainCounter;
+				if (j == neighbour)
+					otherCarTrain = trainCounter;
+			}
+		}
+		
+		if(carTrain == otherCarTrain)
+			isInTrain = true;
+		
+		
+		return isInTrain;
+	}
 }

@@ -95,6 +95,27 @@ public class Functions {
 		return null;
 	}
 	
+
+	public static String closestInTrain(HashMap<String, OrientedPoint> list, OrientedPoint p, int train) {
+		String closer = new String();
+		int manhC = -1;
+		if(list !=null) {
+			if (!list.isEmpty()) {
+				for(String it : list.keySet()) {
+					if(manhC < 0) {
+						closer = it;
+					} else if(manhattanCar(list.get(it), p) < manhattanCar(list.get(closer), p)) {
+						closer = it;
+					}
+				}
+				return closer;
+			}
+			return null;
+		}
+		return null;
+	}	
+	
+	
 	public static boolean estDerriere(OrientedPoint other, OrientedPoint we) {
 		//other is behind us if our moving coordinate > his corresponding coordinate
 		if((we.orientation == 2*Math.PI || we.orientation == 0) && we.y < other.y) {
