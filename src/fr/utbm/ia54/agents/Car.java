@@ -82,20 +82,28 @@ public class Car extends Agent {
 		float slowD = 0;
 		float toSlowV = 0;
 		int place =0;
+		
 		OrientedPoint tmpPos;
-		String closer = null;
-		OrientedPoint closerPos;
+		String closerInTrain = null;
+		OrientedPoint closerPosInTrain;
+		String closerOutTrain = null;
+		OrientedPoint closerPosOutTrain;
+		Boolean isInTrain = true;
+		
 		Boolean messageToCar;
+		
 		OrientedPoint cross = null;
 		boolean priority = false;
 		boolean crossing = false;
+		
 		HashMap<String, OrientedPoint> neighbours = new HashMap<String, OrientedPoint>();
 		HashMap<String, OrientedPoint> emergencies = new HashMap<String, OrientedPoint>();
 		HashMap<String, OrientedPoint> tmpKnownCars = new HashMap<String, OrientedPoint>();
 		
 		// we drive for a while
 		while(live) {
-			closer = new String();
+			closerInTrain = new String();
+			closerOutTrain = new String();
 			newV = 0;
 			distance = 0;
 			slowD = 0;
@@ -139,6 +147,7 @@ public class Car extends Agent {
 			if(neighbours != null && !neighbours.isEmpty()) {
 								
 /* EMERGENCIES **********************************************************/
+				//In case of Vehicule in that area, we stop the car
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				if(emergencies != null && !emergencies.isEmpty()) {
 
@@ -148,21 +157,38 @@ public class Car extends Agent {
 				} 
 				else {
 					//no car "emergencies", which would be too close for safety purposes
-					closer = Functions.closest(neighbours, tmpPos);
-					closerPos = neighbours.get(closer);
 						
 				//we have to consider different safeD according to the train of the car.
 					
 /* CROSSING *******************************************************************************/
 				//TODO multi trains	
-				/*	un voisin le plus proche pour train interne, ajuster à safeD
+				/*	un voisin le plus proche pour train interne, ajuster Ã  safeD
 					
-					pour le croisement, si priorité : roule;
+					pour le croisement, si prioritÃ© : roule;
 					                    sinon, ajuster pour safeD une fois la voiture sortie du crossing
 					                    
 					selectionner plus basse vitesse                    
 					
 					*/
+					
+					while ((closerInTrain == null || closeroutTrain == null) && !!index de liste non fini)
+					{
+						isInTrain = isInTrain(!!tmp);
+						if(closerInTrain == null && isInTrain)
+						{
+							closerInTrain = Functions.closest(neighbours, tmpPos);
+							closerPosInTrain = neighbours.get(closer);	
+						}
+						else if (closerOutTrain == null && !isInTrain)
+						{
+							//We make sure we head for a common crossing
+							if(autre voiture en route pour le meme croisement)
+							{
+								closerOutTrain = Functions.closest(neighbours, tmpPos);
+								closerPosOutTrain = neighbours.get(closer);
+							}
+						}
+					}
 					
 					closer in train
 					
@@ -171,9 +197,9 @@ public class Car extends Agent {
 					
 					
 					if in train != null
-						si même qu'avant, estimation rapide de l'accélération avec coefitient de conservation de l'ancienne valeur
+						si mÃªme qu'avant, estimation rapide de l'accÃ©lÃ©ration avec coefitient de conservation de l'ancienne valeur
 						
-						différence vitesse
+						diffÃ©rence vitesse
 						distance prochain tour
 						
 						disance de suivi <> distance prochain tour
@@ -181,18 +207,18 @@ public class Car extends Agent {
 					
 					if other train != null
 					
-						si même qu'avant estimation rapide de l'acélération avec prise en compte de l'ancien calcul (selon priorité)
+						si mÃªme qu'avant estimation rapide de l'acÃ©lÃ©ration avec prise en compte de l'ancien calcul (selon prioritÃ©)
 					
-						definir priorité 
+						definir prioritÃ© 
 						
-						si priorité
+						si prioritÃ©
 							on roule a balle
 						si non
-							estimer temps/ distance avant libération du carfour par prioritaire
-							déduire vmax, accélaration de croisement
+							estimer temps/ distance avant libÃ©ration du carfour par prioritaire
+							dÃ©duire vmax, accÃ©laration de croisement
 					
 					acceleration la plus faible (dans la limite du possible)		
-					garder trace accélérations, positions, et priorité
+					garder trace accÃ©lÃ©rations, positions, et prioritÃ©
 						
 						
 					
