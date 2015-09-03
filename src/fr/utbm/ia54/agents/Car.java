@@ -164,11 +164,37 @@ public class Car extends Agent {
 					
 					*/
 					
+					closer in train
 					
-					//isInMyTrain();
+					closer other train (avant croisement)
+					accelerations au max
 					
 					
+					if in train != null
+						si même qu'avant, estimation rapide de l'accélération avec coefitient de conservation de l'ancienne valeur
+						
+						différence vitesse
+						distance prochain tour
+						
+						disance de suivi <> distance prochain tour
+						=> acceleration pour suivi
 					
+					if other train != null
+					
+						si même qu'avant estimation rapide de l'acélération avec prise en compte de l'ancien calcul (selon priorité)
+					
+						definir priorité 
+						
+						si priorité
+							on roule a balle
+						si non
+							estimer temps/ distance avant libération du carfour par prioritaire
+							déduire vmax, accélaration de croisement
+					
+					acceleration la plus faible (dans la limite du possible)		
+					garder trace accélérations, positions, et priorité
+						
+						
 					
 					if(crossCars.peek() != null && crossCars.peek().equals(closer)) {
 						// check for priority
