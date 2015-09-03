@@ -23,7 +23,7 @@ import madkit.message.StringMessage;
 public class Environment extends Agent{
 	private HashMap<String, OrientedPoint> positions;
 	private HashMap<String, AgentAddress> addresses;
-	private List<List<String>> carsId; // List of car's networkId (one list by train)
+	private static List<List<String>> carsId; // List of car's networkId (one list by train)
 	private Integer beaconRange;
 
 	/**
@@ -331,7 +331,7 @@ public class Environment extends Agent{
 	}
 	
 	
-	public boolean isInMyTrain(String me, String neighbour) {
+	public static boolean isInMyTrain(String me, String neighbour) {
 		boolean isInTrain = false;
 		int trainCounter = 1;
 		int carTrain = 0;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 
@@ -82,8 +83,9 @@ public class Car extends Agent {
 		float slowD = 0;
 		float toSlowV = 0;
 		int place =0;
-		
 		OrientedPoint tmpPos;
+		
+		
 		String closerInTrain = null;
 		OrientedPoint closerPosInTrain;
 		String closerOutTrain = null;
@@ -171,13 +173,19 @@ public class Car extends Agent {
 					
 					*/
 					
-					while ((closerInTrain == null || closeroutTrain == null) && !!index de liste non fini)
+					
+					Set<String> keys = neighbours.keySet();
+					Iterator<String> it = keys.iterator();
+					String tmpNeighbour;
+					
+					while ((closerInTrain == null || closerOutTrain == null) && it.hasNext())
 					{
-						isInTrain = isInTrain(!!tmp);
+						tmpNeighbour = it.next();
+						isInTrain = Environment.isInMyTrain(this.getName(), tmpNeighbour);
 						if(closerInTrain == null && isInTrain)
 						{
 							closerInTrain = Functions.closest(neighbours, tmpPos);
-							closerPosInTrain = neighbours.get(closer);	
+							closerPosInTrain = neighbours.get(closerInTrain);	
 						}
 						else if (closerOutTrain == null && !isInTrain)
 						{
@@ -185,7 +193,7 @@ public class Car extends Agent {
 							if(autre voiture en route pour le meme croisement)
 							{
 								closerOutTrain = Functions.closest(neighbours, tmpPos);
-								closerPosOutTrain = neighbours.get(closer);
+								closerPosOutTrain = neighbours.get(closerOutTrain);
 							}
 						}
 					}
