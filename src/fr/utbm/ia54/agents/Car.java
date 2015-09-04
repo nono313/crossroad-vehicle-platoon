@@ -178,22 +178,38 @@ public class Car extends Agent {
 					Iterator<String> it = keys.iterator();
 					String tmpNeighbour;
 					
-					while ((closerInTrain == null || closerOutTrain == null) && it.hasNext())
-					{
+					while ((closerInTrain == null || closerOutTrain == null) && it.hasNext()) {
 						tmpNeighbour = it.next();
 						isInTrain = Environment.isInMyTrain(this.getName(), tmpNeighbour);
-						if(closerInTrain == null && isInTrain)
-						{
+						if(closerInTrain == null && isInTrain) {
 							closerInTrain = Functions.closest(neighbours, tmpPos);
 							closerPosInTrain = neighbours.get(closerInTrain);	
 						}
-						else if (closerOutTrain == null && !isInTrain)
-						{
-							//We make sure we head for a common crossing
-							if(autre voiture en route pour le meme croisement)
-							{
-								closerOutTrain = Functions.closest(neighbours, tmpPos);
-								closerPosOutTrain = neighbours.get(closerOutTrain);
+						else if (closerOutTrain == null && !isInTrain) {
+							// we make sure that the two cars are heading for a common crossing
+							if(Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(90) 
+								|| Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(270)) {
+								
+								ArrayList<OrientedPoint> crossings = carPath.getCrossingNear(tmpPos, seeD);
+								Iterator<OrientedPoint> it2 = crossings.iterator();
+								while(it2.hasNext() && closerOutTrain == null) {
+									cross = it2.next();
+									if((closerPos.getX() == cross.getX()) && (tmpPos.getY() == cross.getY())) {
+										
+										if((closerPos.getY()<cross.getY() && closerPos.getOrientation() == Math.toRadians(180))||
+											(closerPos.getY()>cross.getY() && closerPos.getOrientation() == Math.toRadians(0))) {
+											closerOutTrain = Functions.closest(neighbours, tmpPos);
+											closerPosOutTrain = neighbours.get(closerOutTrain);
+										}
+									} 
+									else if ((closerPos.getY() == cross.getY()) && (tmpPos.getX() == cross.getX())) {
+										if((closerPos.getX()<cross.getX() && closerPos.getOrientation() == Math.toRadians(90))||
+											(closerPos.getX()>cross.getX() && closerPos.getOrientation() == Math.toRadians(270))) {
+											closerOutTrain = Functions.closest(neighbours, tmpPos);
+											closerPosOutTrain = neighbours.get(closerOutTrain);
+										}
+									}
+								}
 							}
 						}
 					}
