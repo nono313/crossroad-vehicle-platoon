@@ -177,6 +177,7 @@ public class Car extends Agent {
 					Set<String> keys = neighbours.keySet();
 					Iterator<String> it = keys.iterator();
 					String tmpNeighbour;
+					OrientedPoint closerPos;
 					
 					while ((closerInTrain == null || closerOutTrain == null) && it.hasNext()) {
 						tmpNeighbour = it.next();
@@ -186,6 +187,7 @@ public class Car extends Agent {
 							closerPosInTrain = neighbours.get(closerInTrain);	
 						}
 						else if (closerOutTrain == null && !isInTrain) {
+							closerPos = neighbours.get(tmpNeighbour);
 							// we make sure that the two cars are heading for a common crossing
 							if(Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(90) 
 								|| Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(270)) {
