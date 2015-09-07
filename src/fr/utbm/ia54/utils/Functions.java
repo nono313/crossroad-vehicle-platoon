@@ -2,6 +2,8 @@ package fr.utbm.ia54.utils;
 
 import java.util.HashMap;
 
+import fr.utbm.ia54.consts.Const;
+
 /**
  * Utils functions class.
  * @author Alexis
@@ -38,8 +40,8 @@ public class Functions {
 	public static int manhattanCar(OrientedPoint a, OrientedPoint b) {
 		int distance = Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
 
-		if(distance > 32) {
-			distance -= 32;
+		if(distance > Const.CAR_SIZE) {
+			distance -= Const.CAR_SIZE;
 		} else {
 			distance = 1;
 		}
