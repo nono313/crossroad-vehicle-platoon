@@ -96,28 +96,10 @@ public class Environment extends Agent{
 		frame.setVisible(true);*/
 		
 		final TimeSeries series = new TimeSeries( "Random Data" );         
-		      Second current = new Second( );         
-		      double value = 100.0;         
-		      for (int i = 0; i < 4000; i++)    
-		      {
-		         try 
-		         {
-		            value = value + Math.random( ) - 0.5;                 
-		            series.add(current, new Double( value ) );                 
-		            current = ( Second ) current.next( ); 
-		         }
-		         catch ( SeriesException e ) 
-		         {
-		            System.err.println("Error adding to series");
-		         }
-		      }
-		      
-      		XYDataset data2 = new TimeSeriesCollection(series);
+		Second current = new Second( );         
+		int j = 0;             
+		int interdistance;
 		
-		JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 2", "temps", "interdistance", data2);
-		ChartFrame frame = new ChartFrame("First", chart2);
-		frame.pack();
-		frame.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
@@ -257,6 +239,20 @@ public class Environment extends Agent{
 					}
 				}*/
 			}
+			
+			if(j<400) {
+				interdistance = Functions.manhattan(positions.get(carsId.get(0)),positions.get(carsId.get(1)));
+				series.add(current, new Double(interdistance);                 
+				current = ( Second ) current.next(); 
+				j++;
+			} else if (j==400) {
+				XYDataset data2 = new TimeSeriesCollection(series);
+				JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 0&2", "temps", "interdistance", data2);
+				ChartFrame frame = new ChartFrame("First", chart2);
+				frame.pack();
+				frame.setVisible(true);
+			}
+			
 		}
 	}
 	
