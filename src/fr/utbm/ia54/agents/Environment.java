@@ -23,7 +23,11 @@ import org.jfree.data.DomainOrder;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.SeriesException;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimePeriodValue;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYDatasetTableModel;
@@ -108,7 +112,7 @@ public class Environment extends Agent{
 		         }
 		      }
 		      
-      		TimeTableXYDataset data2 = new TimeSeriesCollection(series);
+      		XYDataset data2 = new TimeSeriesCollection(series);
 		
 		JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 2", "temps", "interdistance", data2);
 		ChartFrame frame = new ChartFrame("First", chart2);
