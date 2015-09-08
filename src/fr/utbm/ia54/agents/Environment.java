@@ -16,6 +16,18 @@ import madkit.kernel.Message;
 import madkit.message.ObjectMessage;
 import madkit.message.StringMessage;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.DomainOrder;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.time.TimePeriodValue;
+import org.jfree.data.time.TimeTableXYDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYDatasetTableModel;
+
 /**
  * @author Alexis Florian
  * This agent control every car's trajectory and warn cars about collisions.
@@ -60,6 +72,32 @@ public class Environment extends Agent{
 			}
 		}
 		
+
+		DefaultPieDataset data = new DefaultPieDataset();
+		data.setValue("Category 1", 43.2);
+		data.setValue("Category 2", 27.9);
+		data.setValue("Category 3", 79.5);
+		// create a chart...
+		
+		JFreeChart chart = ChartFactory.createPieChart(
+		"Sample Pie Chart",
+		data,
+		true, // legend?
+		true, // tooltips?
+		false // URLs?
+		);
+		// create and display a frame...
+		ChartFrame frame = new ChartFrame("First", chart);
+		frame.pack();
+		frame.setVisible(true);
+		
+		TimeTableXYDataset data2 = new TimeTableXYDataset();
+		String car1 = new String("car1");
+		TimePeriodValue time = new TimePeriodValue(period, 0);
+		data2.add(0, 1, car1);
+		
+		JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 2", "temps", "interdistance", data2);
+		
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
@@ -69,7 +107,7 @@ public class Environment extends Agent{
 		  At that time we also inform the train, so it can return to usual speed and distance orders
 		  
 		  IMPROVEMENT : IRL only cars have sensors, so the first car should recieve the event,
-		  and send it to its train
+		  and send it to its train, probably
 		  */
 		while(true) {
 			List<String> groups;
