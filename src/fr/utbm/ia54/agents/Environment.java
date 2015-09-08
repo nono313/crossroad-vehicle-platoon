@@ -73,7 +73,7 @@ public class Environment extends Agent{
 		}
 		
 
-		DefaultPieDataset data = new DefaultPieDataset();
+		/*DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Category 1", 43.2);
 		data.setValue("Category 2", 27.9);
 		data.setValue("Category 3", 79.5);
@@ -89,15 +89,31 @@ public class Environment extends Agent{
 		// create and display a frame...
 		ChartFrame frame = new ChartFrame("First", chart);
 		frame.pack();
-		frame.setVisible(true);
+		frame.setVisible(true);*/
 		
-		TimeTableXYDataset data2 = new TimeTableXYDataset();
-		String car1 = new String("car1");
-		TimePeriodValue time = new TimePeriodValue(period, 0);
-		data2.add(0, 1, car1);
+		final TimeSeries series = new TimeSeries( "Random Data" );         
+		      Second current = new Second( );         
+		      double value = 100.0;         
+		      for (int i = 0; i < 4000; i++)    
+		      {
+		         try 
+		         {
+		            value = value + Math.random( ) - 0.5;                 
+		            series.add(current, new Double( value ) );                 
+		            current = ( Second ) current.next( ); 
+		         }
+		         catch ( SeriesException e ) 
+		         {
+		            System.err.println("Error adding to series");
+		         }
+		      }
+		      
+      		TimeTableXYDataset data2 = new TimeSeriesCollection(series);
 		
 		JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 2", "temps", "interdistance", data2);
-		
+		ChartFrame frame = new ChartFrame("First", chart2);
+		frame.pack();
+		frame.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
