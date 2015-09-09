@@ -98,9 +98,10 @@ public class Environment extends Agent{
 		frame.pack();
 		frame.setVisible(true);*/
 		
-		final XYSeries  series = new XYSeries ( "train0car2" );          
-		int j = 0;             
+		final XYSeries  series = new XYSeries ( "train0car2" );            
 		int interdistance;
+		int j;
+		Long runningT = System.currentTimeMillis();
 		
 		
 		/*Here we simulate the environment with beaconised's crossings
@@ -242,12 +243,14 @@ public class Environment extends Agent{
 				}*/
 			}
 			
-			if(j<2000) {
+			if(runningT + Const.PAS <= System.currentTimeMillis()) {
+				runningT = System.currentTimeMillis();
 				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(0)),positions.get(carsId.get(0).get(1)));
 				System.out.println(interdistance);
 				series.add(j, interdistance);         
 				j++;
-			} else if (j==2000) {
+			}
+			if (j==400) {
 				XYSeriesCollection data2 = new XYSeriesCollection( );
 				data2.addSeries(series);
 				JFreeChart xylineChart = ChartFactory.createXYLineChart(
