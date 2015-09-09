@@ -19,6 +19,7 @@ import madkit.message.StringMessage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
@@ -31,6 +32,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYDatasetTableModel;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * @author Alexis Florian
@@ -95,8 +98,7 @@ public class Environment extends Agent{
 		frame.pack();
 		frame.setVisible(true);*/
 		
-		final TimeSeries series = new TimeSeries( "Random Data" );         
-		Second current = new Second( );         
+		final XYSeries  series = new XYSeries ( "train0car2" );          
 		int j = 0;             
 		int interdistance;
 		
@@ -240,17 +242,25 @@ public class Environment extends Agent{
 				}*/
 			}
 			
-			if(j<400) {
-				interdistance = Functions.manhattan(positions.get(carsId.get(0)),positions.get(carsId.get(1)));
-				series.add(current, new Double(interdistance);                 
-				current = ( Second ) current.next(); 
+			if(j<2000) {
+				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(0)),positions.get(carsId.get(0).get(1)));
+				System.out.println(interdistance);
+				series.add(j, interdistance);         
 				j++;
-			} else if (j==400) {
-				XYDataset data2 = new TimeSeriesCollection(series);
-				JFreeChart chart2 = ChartFactory.createTimeSeriesChart("vitesse et interdistance voiture 0&2", "temps", "interdistance", data2);
-				ChartFrame frame = new ChartFrame("First", chart2);
+			} else if (j==2000) {
+				XYSeriesCollection data2 = new XYSeriesCollection( );
+				data2.addSeries(series);
+				JFreeChart xylineChart = ChartFactory.createXYLineChart(
+				         "interdistance car2train0 ",
+				         "turns" ,
+				         "distance from previous car" ,
+				         data2 ,
+				         PlotOrientation.VERTICAL ,
+				         true , true , false);
+				ChartFrame frame = new ChartFrame("First", xylineChart);
 				frame.pack();
 				frame.setVisible(true);
+				j++;
 			}
 			
 		}
