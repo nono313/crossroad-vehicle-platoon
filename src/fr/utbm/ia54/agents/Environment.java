@@ -1,5 +1,6 @@
 package fr.utbm.ia54.agents;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -291,7 +292,7 @@ public class Environment extends Agent{
 					for (int j=0; j<carsId.get(i).size()-1;j++) {
 						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
 						series.get(i).get(j).add(runningT.intValue(), interdistance); 	
-						System.out.println("train"+i+"car"+j+", interD :" interdistance);
+						System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
 					}
 				}
 				    
