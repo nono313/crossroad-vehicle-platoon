@@ -1,5 +1,6 @@
 package fr.utbm.ia54.agents;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import madkit.message.StringMessage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.DatasetChangeListener;
@@ -129,7 +131,7 @@ public class Environment extends Agent{
 		data.addSeries(train0car5);
 		
 		XYSeriesCollection data2 = new XYSeriesCollection( );
-		data2.addSeries(train1car2);
+		//]data2.addSeries(train1car2);
 		data2.addSeries(train1car3);
 		data2.addSeries(train1car4);
 		data2.addSeries(train1car5);
@@ -153,8 +155,8 @@ public class Environment extends Agent{
 		         data2 ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
-		xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
-		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart);
+		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
+		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
 		frame2.pack();
 		frame2.setVisible(true);
 		
