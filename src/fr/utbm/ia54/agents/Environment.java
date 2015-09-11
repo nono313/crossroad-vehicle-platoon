@@ -122,12 +122,13 @@ public class Environment extends Agent{
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
 
-		XYSeriesCollection data2 = new XYSeriesCollection( );
-		data2.addSeries(train0car2);
-		data2.addSeries(train0car3);
-		data2.addSeries(train0car4);
-		data2.addSeries(train0car5);
+		XYSeriesCollection data = new XYSeriesCollection( );
+		data.addSeries(train0car2);
+		data.addSeries(train0car3);
+		data.addSeries(train0car4);
+		data.addSeries(train0car5);
 		
+		XYSeriesCollection data2 = new XYSeriesCollection( );
 		data2.addSeries(train1car2);
 		data2.addSeries(train1car3);
 		data2.addSeries(train1car4);
@@ -137,14 +138,25 @@ public class Environment extends Agent{
 		         "interdistance of cars",
 		         "time" ,
 		         "distance from previous car" ,
-		         data2 ,
+		         data ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
 		xylineChart.setBackgroundPaint(Color.white);
-		ChartFrame frame = new ChartFrame("INTERDISTANCE", xylineChart);
+		ChartFrame frame = new ChartFrame("INTERDISTANCE TRAIN 1", xylineChart);
 		frame.pack();
 		frame.setVisible(true);
 		
+		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
+		         "interdistance of cars",
+		         "time" ,
+		         "distance from previous car" ,
+		         data2 ,
+		         PlotOrientation.VERTICAL ,
+		         true , true , false);
+		xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
+		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart);
+		frame2.pack();
+		frame2.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
