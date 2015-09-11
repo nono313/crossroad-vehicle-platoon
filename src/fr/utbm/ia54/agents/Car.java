@@ -116,7 +116,8 @@ public class Car extends Agent {
 			place = 10;
 			messageToCar = null;
 			
-			
+			//if(pos.getSpeed() == 0)
+			//	System.out.println("that's me stopped : " + this.getNetworkID());
 			
 			// we treat all new messages
 			getNewMessages();
@@ -157,10 +158,26 @@ public class Car extends Agent {
 				//In case of Vehicule in that area, we stop the car
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				if(emergencies != null && !emergencies.isEmpty()) {
+					if(crossCars.peek() != null && crossCars.peek().equals(emergencies.get(0))) {
+						// check for priority
+						priority = crossCarStatus.get(emergencies.get(0));
+					} 
+					else if(!crossCars.isEmpty() && crossCars.contains(emergencies.get(0))) {
+						// need to clean queue until reach closer
+						while(!crossCars.peek().equals(emergencies.get(0))) {
+							crossCarStatus.remove(crossCars.poll());
+						}
+						priority = crossCarStatus.get(emergencies.get(0));
+					} else {
+						priority = false;
+					}
 
-					newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
-					distance = newV*(Const.PAS/1000.f);
-					tmpPos = carPath.getNextPoint(pos, distance, numTrain);
+					if(!priority) {
+						newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
+						distance = newV*(Const.PAS/1000.f);
+						tmpPos = carPath.getNextPoint(pos, distance, numTrain);
+					}
+					
 				} 
 				else {
 					//no car "emergencies", which would be too close for safety purposes
@@ -294,8 +311,12 @@ public class Car extends Agent {
 							//Priority goes to closest and fastest car
 							//we then inform that car
 							newD = Functions.manhattanCar(neighbours.get(closerOutTrain), cross)+Const.CAR_SIZE;
-							if(dToCross/newV < newD/neighbours.get(closerOutTrain).getSpeed())
+							System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
+							System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/neighbours.get(closerOutTrain).getSpeed());
+							if(dToCross/newV < newD/neighbours.get(closerOutTrain).getSpeed()) {
 								priority = true;
+								System.out.println(this.getNetworkID() + " have priority over " + closerOutTrain);
+							}
 							else
 								priority = false;
 							
@@ -324,8 +345,7 @@ public class Car extends Agent {
 					
 					//We now now how much we need to slow down for each situation. We take care of the most important one
 					toSlowV = (toSlowVOutTrain < toSlowVInTrain) ? toSlowVInTrain : toSlowVOutTrain ;
-						
-						
+					
 					knownCars = tmpKnownCars;				
 				}//no emergencies
 			}//no neighbours

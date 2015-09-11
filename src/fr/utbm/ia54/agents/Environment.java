@@ -100,8 +100,20 @@ public class Environment extends Agent{
 		
 		final XYSeries  series = new XYSeries ( "train0car2" );            
 		int interdistance;
-		int j;
 		Long runningT = System.currentTimeMillis();
+
+		XYSeriesCollection data2 = new XYSeriesCollection( );
+		data2.addSeries(series);
+		JFreeChart xylineChart = ChartFactory.createXYLineChart(
+		         "interdistance car2train0 ",
+		         "turns" ,
+		         "distance from previous car" ,
+		         data2 ,
+		         PlotOrientation.VERTICAL ,
+		         true , true , false);
+		ChartFrame frame = new ChartFrame("First", xylineChart);
+		frame.pack();
+		frame.setVisible(true);
 		
 		
 		/*Here we simulate the environment with beaconised's crossings
@@ -151,8 +163,9 @@ public class Environment extends Agent{
 					else {// otherwise we check if it's entering the crossing
 						carId = carsId.get(i).get(0);
 						carPos = positions.get(carId);
-						
-						if(Functions.manhattan(carPos,cross) < beaconRange && carPath.isInPath(carPos, i, cross, beaconRange)){
+						//System.out.println("train"+i+"car"+carId+"?");
+						if(Functions.manhattan(carPos,cross) < beaconRange ){//&& carPath.isInPath(carPos, i, cross, beaconRange)){
+							System.out.println("a train in a crossing, fuck");
 							//we add he train to the cross and alert him
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("crossing", cross);
@@ -246,26 +259,9 @@ public class Environment extends Agent{
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
 				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(0)),positions.get(carsId.get(0).get(1)));
-				System.out.println(interdistance);
-				series.add(j, interdistance);         
-				j++;
+				//System.out.println(" j " + j + ". "+interdistance);
+				series.add(runningT.intValue(), interdistance);     
 			}
-			if (j==400) {
-				XYSeriesCollection data2 = new XYSeriesCollection( );
-				data2.addSeries(series);
-				JFreeChart xylineChart = ChartFactory.createXYLineChart(
-				         "interdistance car2train0 ",
-				         "turns" ,
-				         "distance from previous car" ,
-				         data2 ,
-				         PlotOrientation.VERTICAL ,
-				         true , true , false);
-				ChartFrame frame = new ChartFrame("First", xylineChart);
-				frame.pack();
-				frame.setVisible(true);
-				j++;
-			}
-			
 		}
 	}
 	
@@ -294,6 +290,7 @@ public class Environment extends Agent{
 				
 				String address = message.getSender().getAgentNetworkID();
 				String group = message.getSender().getGroup();
+				//System.out.println(address +" has send it's position");
 				if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
 					carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
 				}

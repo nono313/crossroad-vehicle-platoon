@@ -349,8 +349,11 @@ public class CarPath {
 				
 				previousP = p;
 				p = it.next();
-				if(!it.hasNext())
+				if(!it.hasNext() && distance>0) {
 					it=itbis;
+					System.out.println("one more turn of circuit to search the void");
+				}
+					
 			}while(it.hasNext() && !found && distance >0);
 		}
 		return found;
