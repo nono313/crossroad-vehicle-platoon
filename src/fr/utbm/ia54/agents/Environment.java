@@ -139,6 +139,7 @@ public class Environment extends Agent{
 		         data2 ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
+		xylineChart.setBackgroundPaint(Color.white);
 		ChartFrame frame = new ChartFrame("INTERDISTANCE", xylineChart);
 		frame.pack();
 		frame.setVisible(true);
@@ -287,9 +288,10 @@ public class Environment extends Agent{
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
 				for (int i=0; i<carsId.size();i++) {
-					for (int j=0; j<carsId.size()-1;j++) {
+					for (int j=0; j<carsId.get(i).size()-1;j++) {
 						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
 						series.get(i).get(j).add(runningT.intValue(), interdistance); 	
+						System.out.println("train"+i+"car"+j+", interD :" interdistance);
 					}
 				}
 				    
