@@ -98,20 +98,48 @@ public class Environment extends Agent{
 		frame.pack();
 		frame.setVisible(true);*/
 		
-		final XYSeries  series = new XYSeries ( "train0car2" );            
+		List<List<XYSeries>> series = new ArrayList<List<XYSeries>>();
+		series.add(new ArrayList<XYSeries>());
+		final XYSeries  train0car2 = new XYSeries ( "train0car2" );
+		series.get(0).add(train0car2);
+		final XYSeries  train0car3 = new XYSeries ( "train0car3" ); 
+		series.get(0).add(train0car3);  
+		final XYSeries  train0car4 = new XYSeries ( "train0car4" );
+		series.get(0).add(train0car4);   
+		final XYSeries  train0car5 = new XYSeries ( "train0car5" );
+		series.get(0).add(train0car5);   
+		
+		series.add(new ArrayList<XYSeries>());
+		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
+		series.get(1).add(train0car2);
+		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
+		series.get(1).add(train0car3);
+		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
+		series.get(1).add(train0car4);
+		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
+		series.get(1).add(train0car5);  
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
 
 		XYSeriesCollection data2 = new XYSeriesCollection( );
-		data2.addSeries(series);
+		data2.addSeries(train0car2);
+		data2.addSeries(train0car3);
+		data2.addSeries(train0car4);
+		data2.addSeries(train0car5);
+		
+		data2.addSeries(train1car2);
+		data2.addSeries(train1car3);
+		data2.addSeries(train1car4);
+		data2.addSeries(train1car5);
+		
 		JFreeChart xylineChart = ChartFactory.createXYLineChart(
-		         "interdistance car2train0 ",
-		         "turns" ,
+		         "interdistance of cars",
+		         "time" ,
 		         "distance from previous car" ,
 		         data2 ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
-		ChartFrame frame = new ChartFrame("First", xylineChart);
+		ChartFrame frame = new ChartFrame("INTERDISTANCE", xylineChart);
 		frame.pack();
 		frame.setVisible(true);
 		
@@ -258,9 +286,13 @@ public class Environment extends Agent{
 			
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
-				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(0)),positions.get(carsId.get(0).get(1)));
-				//System.out.println(" j " + j + ". "+interdistance);
-				series.add(runningT.intValue(), interdistance);     
+				for (int i=0; i<carsId.size();i++) {
+					for (int j=0; j<carsId.size()-1;j++) {
+						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
+						series.get(i).get(j).add(runningT.intValue(), interdistance); 	
+					}
+				}
+				    
 			}
 		}
 	}
