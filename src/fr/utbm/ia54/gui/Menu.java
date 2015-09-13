@@ -18,6 +18,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import fr.utbm.ia54.agents.Environment;
+
 /**
  * Menu bar class.
  * @author Alexis Florian
@@ -25,11 +27,14 @@ import javax.swing.event.ChangeListener;
 public class Menu extends JPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private JButton flag = new JButton("Checkpoint");
+	private JButton priority = new JButton("Check Priorities");
 	private JButton quit = new JButton("Quit");
-	private JSpinner spinner;
+	//private JSpinner spinner;
 	private JFrame myFrame;
+	private Environment environnement;
+	
 	
 	/**
 	 * Creates the application's menu
@@ -44,28 +49,38 @@ public class Menu extends JPanel implements ActionListener{
 	    
 	    // Buttons
 	    box1.add(flag);
+	    box1.add(priority);
 	    box1.add(quit);
 		
 	    // Input field (spinner)
-	    box1.add(new JLabel("Speed : "));
-	    SpinnerModel model = new SpinnerNumberModel(50, 0, 100, 10);     
-	    spinner = new JSpinner(model);
-	    spinner.setMaximumSize(new Dimension( 50, 24 ));
-	    box1.add(spinner);
+	    //box1.add(new JLabel("Speed : "));
+	    //SpinnerModel model = new SpinnerNumberModel(50, 0, 100, 10);     
+	    //spinner = new JSpinner(model);
+	    //spinner.setMaximumSize(new Dimension( 50, 24 ));
+	    //box1.add(spinner);
 	    
 	    // Listeners
 		flag.addActionListener(this);
+		priority.addActionListener(this);
 		quit.addActionListener(this);
-		spinner.addChangeListener(new ChangeListener() {
+		/*spinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO
 			}
-	    });
+	    });*/
 	    
 	    this.add(box1);
 	  }
 	
+	public Environment getEnvironnement() {
+		return environnement;
+	}
+
+	public void setEnvironnement(Environment environnement) {
+		this.environnement = environnement;
+	}
+
 	/**
 	 * Listeners onClick fonction
 	 */
@@ -74,6 +89,9 @@ public class Menu extends JPanel implements ActionListener{
 
 		if (source == flag) {
 			System.out.println("<---------------------------- CHECKPOINT ---------------------------->");
+		} else if (source == priority) {
+			System.out.println("<--------------------- CHECK of CARS PRIORITIES --------------------->");
+			environnement.printAllPriorities();
 		} 
 		else if (source == quit)
 			myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING));

@@ -17,6 +17,7 @@ public class MainFrame {
 	
 	private JFrame myFrame;
 	private JLayeredPane superposition;
+	private Menu myMenu;
 	
 	public  MainFrame() {
 		
@@ -30,7 +31,8 @@ public class MainFrame {
 		
 		/* Menu */
 		Box menuLayout = new Box(BoxLayout.X_AXIS);
-	    menuLayout.add(new Menu(myFrame));
+		myMenu = new Menu(myFrame);
+	    menuLayout.add(myMenu);
 		
 		/* Background */
 	    CarPath carPath = MainProgram.getCarPath();
@@ -46,6 +48,10 @@ public class MainFrame {
 		myFrame.add(superposition);
 		myFrame.setResizable(false);
 		myFrame.setVisible(true);
+	}
+
+	public Menu getMyMenu() {
+		return myMenu;
 	}
 
 	public JLayeredPane getSuperposition() {

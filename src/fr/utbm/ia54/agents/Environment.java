@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,41 +101,52 @@ public class Environment extends Agent{
 		ChartFrame frame = new ChartFrame("First", chart);
 		frame.pack();
 		frame.setVisible(true);*/
-		
-		List<List<XYSeries>> series = new ArrayList<List<XYSeries>>();
-		series.add(new ArrayList<XYSeries>());
+
+		List<XYSeries> series = new ArrayList<XYSeries>();
+		List<XYSeries> series2 = new ArrayList<XYSeries>();
 		final XYSeries  train0car2 = new XYSeries ( "train0car2" );
-		series.get(0).add(train0car2);
+		series.add(train0car2);
 		final XYSeries  train0car3 = new XYSeries ( "train0car3" ); 
-		series.get(0).add(train0car3);  
+		series.add(train0car3);  
 		final XYSeries  train0car4 = new XYSeries ( "train0car4" );
-		series.get(0).add(train0car4);   
+		series.add(train0car4);   
 		final XYSeries  train0car5 = new XYSeries ( "train0car5" );
-		series.get(0).add(train0car5);   
+		series.add(train0car5);   
 		
-		series.add(new ArrayList<XYSeries>());
 		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
-		series.get(1).add(train0car2);
+		series2.add(train0car2);
 		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
-		series.get(1).add(train0car3);
+		series2.add(train0car3);
 		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
-		series.get(1).add(train0car4);
+		series2.add(train0car4);
 		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
-		series.get(1).add(train0car5);  
+		series2.add(train0car5);  
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
 
 		XYSeriesCollection data = new XYSeriesCollection( );
-		data.addSeries(train0car2);
-		data.addSeries(train0car3);
-		data.addSeries(train0car4);
-		data.addSeries(train0car5);
+		//data.addSeries(train0car2);
+		//data.addSeries(train0car3);
+		//data.addSeries(train0car4);
+		//data.addSeries(train0car5);
 		
 		XYSeriesCollection data2 = new XYSeriesCollection( );
-		//]data2.addSeries(train1car2);
-		data2.addSeries(train1car3);
-		data2.addSeries(train1car4);
-		data2.addSeries(train1car5);
+		data2.addSeries(train1car2);
+		//data2.addSeries(train1car3);
+		//data2.addSeries(train1car4);
+		//data2.addSeries(train1car5);
+
+		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
+		         "interdistance of cars",
+		         "time" ,
+		         "distance from previous car" ,
+		         data2 ,
+		         PlotOrientation.VERTICAL ,
+		         true , true , false);
+		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
+		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
+		frame2.pack();
+		frame2.setVisible(true);
 		
 		JFreeChart xylineChart = ChartFactory.createXYLineChart(
 		         "interdistance of cars",
@@ -147,18 +159,6 @@ public class Environment extends Agent{
 		ChartFrame frame = new ChartFrame("INTERDISTANCE TRAIN 1", xylineChart);
 		frame.pack();
 		frame.setVisible(true);
-		
-		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
-		         "interdistance of cars",
-		         "time" ,
-		         "distance from previous car" ,
-		         data2 ,
-		         PlotOrientation.VERTICAL ,
-		         true , true , false);
-		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
-		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
-		frame2.pack();
-		frame2.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
@@ -190,10 +190,10 @@ public class Environment extends Agent{
 					carGroup = Const.SIMU_GROUP + String.valueOf(i);
 					
 					//if the train is checked in, we verify it's still in
-					if(groups.contains(carGroup)) {
+					if(groups.contains(carGroup)) {/*
 						carId = carsId.get(i).get(carsId.get(i).size()-1);
 						carPos = positions.get(carId);
-						
+						System.out.println("crosspassed : " + carId + ", and " +cross);
 						if(crossPassed(carPos,cross)) {
 							groups.remove(groups.indexOf(carGroup));
 							
@@ -202,14 +202,14 @@ public class Environment extends Agent{
 							
 							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
 							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
-						}
+						}*/
 					}
 					else {// otherwise we check if it's entering the crossing
 						carId = carsId.get(i).get(0);
 						carPos = positions.get(carId);
 						//System.out.println("train"+i+"car"+carId+"?");
 						if(Functions.manhattan(carPos,cross) < beaconRange ){//&& carPath.isInPath(carPos, i, cross, beaconRange)){
-							System.out.println("a train in a crossing, fuck");
+							System.out.println("a train in a crossing, great");
 							//we add he train to the cross and alert him
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("crossing", cross);
@@ -221,95 +221,20 @@ public class Environment extends Agent{
 						}
 					}
 				}
-			
-			/*
-			if(!carsId.isEmpty()){
-				// For all crossing point
-				for(OrientedPoint cross : carPath.getCrossing()){
-					// Get the trains which are on the cross
-					List<String> groups = map.get(cross);
-					if(groups == null){
-						groups = new ArrayList<>();
-					}
-
-					// For all trains
-					for(int i=0; i<carsId.size();i++){
-						// Get informations about the first car in the group
-						String carGroup = Const.SIMU_GROUP + String.valueOf(i);
-						String firstCarId = carsId.get(i).get(0);
-						OrientedPoint carPos = positions.get(firstCarId);
-						
-						// If the first car is near a cross and if her train isn't registered for the cross
-						if(Functions.manhattan(carPos,cross) < 300 && !groups.contains(carGroup)){
-							
-							//we add he train to the cross and alert him
-							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
-							tmp.put("crossing", cross);
-							
-							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
-							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
-							groups.add(carGroup);
-							map.put(cross,groups);
-							
-							
-							// If there is already an other train
-							if(!groups.isEmpty()){
-								// Get the list of cars which doesn't reach the cross
-								LinkedList<OrientedPoint> cars = new LinkedList<OrientedPoint>();
-								cars.add(cross);
-								
-								// List of cars which doesn't reach the cross (other train)
-								int otherGroup = (i==0?1:0); // TODO, work only for 2 trains
-								@SuppressWarnings("unused")
-								String otherGroupStr = String.valueOf(otherGroup);
-								String otherCarId = "";
-								OrientedPoint otherCarPos = null;
-								boolean firstUnreached = false;
-								
-								for(int j=0; j<carsId.get(otherGroup).size();j++){
-									otherCarId = carsId.get(otherGroup).get(j);
-									otherCarPos = positions.get(otherCarId);
-									// If the cross is unreached
-									if(!crossPassedBis(otherCarPos,cross))
-										firstUnreached = true;
-									// Add all the cars that have unreached the cross
-									if(firstUnreached)
-										cars.add(otherCarPos);
-								}
-								
-								// Send a message to the train to slow down near the cross (crossing point, list of cars which doesn't reach the cross)
-								ObjectMessage<LinkedList<OrientedPoint>> msg = new ObjectMessage<LinkedList<OrientedPoint>>(cars);
-								sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
-							}
-							
-							// Register the group for the cross
-							groups.add(carGroup);
-							map.put(cross,groups);
-						}
-						
-						// Get informations about the last car in the group
-						String lastCarId = carsId.get(i).get(carsId.get(i).size()-1);
-						carPos = positions.get(lastCarId);
-
-						// Detect when the last car leave the cross
-						if(Functions.manhattan(carPos,cross) > 10 && groups.contains(carGroup) && crossPassed(carPos,cross)){
-							// Unregister the group for the cross
-							groups.remove(groups.indexOf(carGroup));
-						}
-					}
-				}*/
 			}
 			
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
-				for (int i=0; i<carsId.size();i++) {
-					for (int j=0; j<carsId.get(i).size()-1;j++) {
-						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
-						series.get(i).get(j).add(runningT.intValue(), interdistance); 	
-						System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
-					}
-				}
-				    
+				/*for (*/int i=0; /*i<series.size();i++) {*/
+					/*for (*/int j=0; /*j<series.get(i).size()-1;j++) {*/
+					//interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
+					//series.get(j).add(runningT.intValue(), interdistance); 
+					i++;
+					interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
+					series2.get(j).add(runningT.intValue(), interdistance); 	
+						//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
+				//	}
+				//}  
 			}
 		}
 	}
@@ -333,15 +258,29 @@ public class Environment extends Agent{
 				@SuppressWarnings("unchecked")
 				ObjectMessage<HashMap<String, OrientedPoint>> message = (ObjectMessage<HashMap<String, OrientedPoint>>) m;
 				HashMap<String, OrientedPoint> tmp = message.getContent();
-				positions.putAll(tmp);
-				// substring to convert agent network id to network id
-				addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getReceiver().getAgentNetworkID().length()-2), message.getSender());
-				
-				String address = message.getSender().getAgentNetworkID();
-				String group = message.getSender().getGroup();
-				//System.out.println(address +" has send it's position");
-				if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
-					carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
+				//TODO transmit to other group
+				/*if(tmp.get("transfert") != null) {
+					Iterator it = tmp.keySet().iterator();
+					String tmpName = new String();
+					do {
+						tmpName = (String) it.next();
+					}while(tmpName == "transfert");
+					String[] data = tmpName.split(":");
+					HashMap<String, OrientedPoint> tmpData = new HashMap<String, OrientedPoint>();
+					tmpData.put(data[2],tmp.get(tmpName));
+					ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmpData);
+					sendMessage(Const.MY_COMMUNITY, data[0], data[1], msg);
+				} else {*/
+					positions.putAll(tmp);
+					// substring to convert agent network id to network id
+					addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getReceiver().getAgentNetworkID().length()-2), message.getSender());
+					
+					String address = message.getSender().getAgentNetworkID();
+					String group = message.getSender().getGroup();
+					//System.out.println(address +" has send it's position");
+					if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
+						carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
+					//}
 				}
 			}
 		}
@@ -464,5 +403,15 @@ public class Environment extends Agent{
 		
 		
 		return isInTrain;
+	}
+
+	public void printAllPriorities() {
+		
+		StringMessage msg = new StringMessage("printPriority");
+		
+		for (int i=0; i<carsId.size();i++) {
+			String carGroup = Const.SIMU_GROUP + String.valueOf(i);
+			broadcastMessage(Const.MY_COMMUNITY, carGroup, Const.CAR_ROLE, msg);
+		}
 	}
 }

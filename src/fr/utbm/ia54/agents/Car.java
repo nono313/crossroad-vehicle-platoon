@@ -52,6 +52,8 @@ public class Car extends Agent {
 		numTrain = getNumTrain(group);
 		pos = carPath.getStart(numTrain);
 
+		requestRole(Const.MY_COMMUNITY,Const.CAR_ROLE,Const.CAR_ROLE);
+		
 		requestRole(Const.MY_COMMUNITY,group,Const.CAR_ROLE);
 		requestRole(Const.MY_COMMUNITY,group, this.getNetworkID());
 		
@@ -295,7 +297,7 @@ public class Car extends Agent {
 						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 						
 						
-						if(crossCars.peek() != null && crossCars.peek().equals(closerOutTrain)) {
+						if(!crossCars.peek().isEmpty() && crossCars.peek().equals(closerOutTrain)) {
 							// check for priority
 							priority = crossCarStatus.get(closerOutTrain);
 						} 
@@ -421,15 +423,24 @@ public class Car extends Agent {
 					String id = data[2].substring(0, message.getReceiver().getAgentNetworkID().length()-2);
 					//TODO : check if the car is already in the pool, if so and different values ... fuck
 					if(crossCars.contains(id)) {
-						if(!crossCarStatus.get(id).equals(Boolean.valueOf(data[1]))) {
 							//we need to decide who will pass, cars having decided for opposit priority
+							//DUMB solution : train 0 passes first
+						if(!crossCarStatus.get(id).equals(Boolean.valueOf(data[1])) && this.numTrain == 0) {
+							crossCarStatus.put(id, true);
 						}
+						else if (!crossCarStatus.get(id).equals(Boolean.valueOf(data[1])) && this.numTrain == 1) 
+							crossCarStatus.put(id, false);
+						else
+							crossCarStatus.put(id, Boolean.valueOf(data[1]));
 					} else {
 						crossCars.add(id);
 						crossCarStatus.put(id, Boolean.valueOf(data[1]));
 					}
 				} else if (data[0].equals("crossD")) {
 					crossingD = Integer.valueOf(data[1]);
+				} else if (data[0].equals("printPriority")) {
+					String priorities = new String("Priorities of " + this.getName() + " (" + crossCarStatus.size() + ")");
+					System.out.println(priorities + crossCarStatus);
 				} 
 			}
 		}

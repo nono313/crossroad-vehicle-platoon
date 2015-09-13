@@ -52,10 +52,13 @@ public class MainProgram extends Agent{
 		for(int i=0; i<Const.NB_TRAIN;i++) {
 			createGroup(Const.MY_COMMUNITY, Const.SIMU_GROUP+i);
 		}
+		createGroup(Const.MY_COMMUNITY, Const.TRAIN_ROLE);
+		createGroup(Const.MY_COMMUNITY, Const.CAR_ROLE);
 		
 		// 2 : Create environment
         env = new Environment();
         launchAgent(env);
+        mainFrame.getMyMenu().setEnvironnement(env);
 		
         // 3 : Create trains 
         Train[] trains = new Train[Const.NB_TRAIN];

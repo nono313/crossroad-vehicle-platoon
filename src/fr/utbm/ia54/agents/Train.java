@@ -53,8 +53,9 @@ public class Train extends Agent {
 			numTrain++;
 			group = Const.SIMU_GROUP+numTrain;
 		}
-		
+
         requestRole(Const.MY_COMMUNITY, group, Const.TRAIN_ROLE);
+        requestRole(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE);
 	}
 
 	@Override
@@ -132,21 +133,23 @@ public class Train extends Agent {
 					HashMap<String,OrientedPoint> dataRetrieved = (HashMap<String, OrientedPoint>) o;
 					for(String i : dataRetrieved.keySet()) {
 						if(i.equals("crossing")) {
+							System.out.println("our train entered a crossing");
+							
 							soloCrossing.add(dataRetrieved.get(i));
 							
 							// call other trains, if they respond they are in range (comming to the crossing)
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("warningCrossing", dataRetrieved.get(i));
 							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
-							//TODO broadcast message
-							int idOtherTrain =(numTrain==0) ? 1:0;
-							sendMessage(Const.MY_COMMUNITY, Const.SIMU_GROUP+idOtherTrain, Const.TRAIN_ROLE, msg);
+							System.out.println(broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg));
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
+							System.out.println("another train entered a crossing");
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
+								System.out.println("...And we are into this crossing");
 								notAloneCrossing.add(dataRetrieved.get(i));
 								changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
 								changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
@@ -155,10 +158,11 @@ public class Train extends Agent {
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
 								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
 								int idOtherTrain =(numTrain==0) ? 1:0;
-								sendMessage(m.getSender(), msg);
+								System.out.println(sendMessage(m.getSender(), msg));
 							}
 							
 						} else if (i.equals("confirmCrossing")) {
+							System.out.println("So both trains are into the crossing");
 							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));
@@ -166,6 +170,7 @@ public class Train extends Agent {
 							changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
 							}
 						} else if (i.equals("exitCrossing")) {
+							System.out.println("our train is getting out of the crossing");
 							//we have left the crossing, return to normal state
 							soloCrossing.remove(dataRetrieved.get(i));
 							notAloneCrossing.remove(dataRetrieved.get(i));
