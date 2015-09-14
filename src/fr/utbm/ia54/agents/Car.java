@@ -173,14 +173,19 @@ public class Car extends Agent {
 				END-IFS*/
 				if(emergencies != null) {
 					Iterator<String> itEmr = emergencies.keySet().iterator();
-					String carEmp;
-					OrientedPoint carPosEmp;
+					String carEmr;
+					OrientedPoint carPosEmr;
 					while(!emergencies.isEmpty() && itEmr.hasNext()) {
-						carEmp = it.next();
-						carPosEmp = emergencies.get(carEmp);
+						carEmr = itEmr.next();
+						carPosEmr = emergencies.get(carEmr);
 						for(OrientedPoint tmpCross : crossings) {
 							if (Environment.isInMyTrain(this.getName(), carEmr) && Functions.manhattanCar(carPosEmr,tmpCross)>1) {
-								
+								if(!crossCars.contains(closerOutTrain))
+									definePriority(carEmr,carPosEmr);
+								if(getPriority(carEmr) || Functions.manhattanCar(tmpPos,tmpCross)<=1) {
+									emergencies.remove(carEmr);
+									neighbours.remove(carEmr);
+								}
 							}
 						}
 					}
@@ -188,34 +193,15 @@ public class Car extends Agent {
 				
 				
 				if(emergencies != null && !emergencies.isEmpty()) {
-					/*if(crossCars.peek() != null && crossCars.peek().equals(emergencies.get(0))) {
-						// check for priority
-						priority = crossCarStatus.get(emergencies.get(0));
-					} 
-					else if(!crossCars.isEmpty() && crossCars.contains(emergencies.get(0))) {
-						// need to clean queue until reach closer
-						while(!crossCars.peek().equals(emergencies.get(0))) {
-							crossCarStatus.remove(crossCars.poll());
-						}
-						priority = crossCarStatus.get(emergencies.get(0));
-					} else {
-						priority = false;
-					}
-
-					if(!priority) {*/
-						newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
-						distance = newV*(Const.PAS/1000.f);
-						tmpPos = carPath.getNextPoint(pos, distance, numTrain);
-					//}
-					
+					newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
+					distance = newV*(Const.PAS/1000.f);
+					tmpPos = carPath.getNextPoint(pos, distance, numTrain);
 				} 
 				else {
 					//no car "emergencies", which would be too close for safety purposes
-						
-				//we have to consider different safeD according to the train of the car.
 					
-/* CROSSING *******************************************************************************/
-				//TODO multi trains	
+					
+				//TODO multi(>2) trains, not operationnal at ALL. 
 				
 					
 					//search in neighbors for closer of our and other train.
@@ -324,41 +310,9 @@ public class Car extends Agent {
 							
 						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 						
+						definePriority(carEmr,carPosEmr);
+						priority = getPriority(carEmr);
 						
-						if(!crossCars.peek().isEmpty() && crossCars.peek().equals(closerOutTrain)) {
-							// check for priority
-							priority = crossCarStatus.get(closerOutTrain);
-						} 
-						else if(!crossCars.isEmpty() && crossCars.contains(closerOutTrain)) {
-							// need to clean queue until reach closer
-							while(!crossCars.peek().equals(closerOutTrain)) {
-								crossCarStatus.remove(crossCars.poll());
-							}
-							priority = crossCarStatus.get(closerOutTrain);
-						} 
-						else {
-							//no defined priority
-							//Priority goes to closest and fastest car
-							//we then inform that car
-							newD = Functions.manhattanCar(neighbours.get(closerOutTrain), cross)+Const.CAR_SIZE;
-							System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
-							System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/neighbours.get(closerOutTrain).getSpeed());
-							if(dToCross/newV < newD/neighbours.get(closerOutTrain).getSpeed()) {
-								priority = true;
-								System.out.println(this.getNetworkID() + " have priority over " + closerOutTrain);
-							}
-							else
-								priority = false;
-							
-							// send it to the car directly
-							// need to remove role creation with networkId in activate
-							String tmp = "crossing:"+ ((Boolean)(!priority)).toString()+":"+this.getNetworkID();
-							MainProgram.getEnv().sendMessageToId(closerOutTrain, tmp);
-							//sendMessage(closerOutTrain, tmp);
-							crossCars.add(closerOutTrain);
-							crossCarStatus.put(closerOutTrain, priority);
-								
-						}
 						
 						if(!priority) {
 							//do we have to reduce speed ?
@@ -561,5 +515,54 @@ public class Car extends Agent {
 	public int timeToCross(OrientedPoint goal, OrientedPoint start) {
 		int toRun = Functions.manhattan(start, goal);
 		return (int) (toRun/pos.speed);
+	}
+	
+	protected void definePriority(String carEmr, OrienedPoint carPosEmr) {
+		boolean priority = false;
+		try {
+			priority = getPriority(carEmr);
+		}
+		catch(NullPointerException e) {
+			//no defined priority
+			//Priority goes to closest and fastest car
+			//we then inform that car
+			newD = Functions.manhattanCar(neighbours.get(closerOutTrain), cross)+Const.CAR_SIZE;
+			System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
+			System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/neighbours.get(closerOutTrain).getSpeed());
+			if(dToCross/newV < newD/neighbours.get(closerOutTrain).getSpeed()) {
+				priority = true;
+				System.out.println(this.getNetworkID() + " have priority over " + closerOutTrain);
+			}
+			else
+				priority = false;
+			
+			// send it to the car directly
+			// need to remove role creation with networkId in activate
+			String tmp = "crossing:"+ ((Boolean)(!priority)).toString()+":"+this.getNetworkID();
+			MainProgram.getEnv().sendMessageToId(closerOutTrain, tmp);
+			//sendMessage(closerOutTrain, tmp);
+			crossCars.add(closerOutTrain);
+			crossCarStatus.put(closerOutTrain, priority);
+		}
+	}
+	
+	
+	protected Boolean getPriority(String name) {
+		Boolean priority = new Boolean();
+		if(!crossCars.peek().isEmpty() && crossCars.peek().equals(name)) {
+			// check for priority
+			priority = crossCarStatus.get(name);
+		} 
+		else if(!crossCars.isEmpty() && crossCars.contains(name)) {
+			// need to clean queue until reach closer
+			while(!crossCars.peek().equals(name)) {
+				crossCarStatus.remove(crossCars.poll());
+			}
+			priority = crossCarStatus.get(name);
+		} 
+		else {
+			//trow NullPointerException;
+		}
+		return priority;
 	}
 }
