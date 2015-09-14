@@ -160,7 +160,7 @@ public class Car extends Agent {
 				//In case of Vehicule in that area, we stop the car
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				if(emergencies != null && !emergencies.isEmpty()) {
-					if(crossCars.peek() != null && crossCars.peek().equals(emergencies.get(0))) {
+					/*if(crossCars.peek() != null && crossCars.peek().equals(emergencies.get(0))) {
 						// check for priority
 						priority = crossCarStatus.get(emergencies.get(0));
 					} 
@@ -174,11 +174,11 @@ public class Car extends Agent {
 						priority = false;
 					}
 
-					if(!priority) {
+					if(!priority) {*/
 						newV = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
 						distance = newV*(Const.PAS/1000.f);
 						tmpPos = carPath.getNextPoint(pos, distance, numTrain);
-					}
+					//}
 					
 				} 
 				else {
@@ -326,6 +326,7 @@ public class Car extends Agent {
 							// need to remove role creation with networkId in activate
 							String tmp = "crossing:"+ ((Boolean)(!priority)).toString()+":"+this.getNetworkID();
 							MainProgram.getEnv().sendMessageToId(closerOutTrain, tmp);
+							//sendMessage(closerOutTrain, tmp);
 							crossCars.add(closerOutTrain);
 							crossCarStatus.put(closerOutTrain, priority);
 								
