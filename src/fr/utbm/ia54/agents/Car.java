@@ -98,6 +98,7 @@ public class Car extends Agent {
 		
 		Boolean messageToCar;
 		
+		ArrayList<OrientedPoint> crossings;
 		OrientedPoint cross = null;
 		Boolean priority = false;
 		
@@ -157,8 +158,35 @@ public class Car extends Agent {
 			if(neighbours != null && !neighbours.isEmpty()) {
 								
 /* EMERGENCIES **********************************************************/
-				//In case of Vehicule in that area, we stop the car
 				emergencies = inRange(tmpPos, safeD, neighbours);
+				crossings = carPath.getCrossingNear(tmpPos, seeD);
+				
+				
+				/* clean emergencies from conflicts situations
+				IF car is in another train AND out of the cross
+					IF no priority defined
+						define priority
+					IF priority to us OR we are in the crossing already
+						remove car from the list emergencies
+						(& from neighbours ?!)
+				IF car in emergencies, we stop the car as soon as possible
+				END-IFS*/
+				if(emergencies != null) {
+					Iterator<String> itEmr = emergencies.keySet().iterator();
+					String carEmp;
+					OrientedPoint carPosEmp;
+					while(!emergencies.isEmpty() && itEmr.hasNext()) {
+						carEmp = it.next();
+						carPosEmp = emergencies.get(carEmp);
+						for(OrientedPoint tmpCross : crossings) {
+							if (Environment.isInMyTrain(this.getName(), carEmr) && Functions.manhattanCar(carPosEmr,tmpCross)>1) {
+								
+							}
+						}
+					}
+				}
+				
+				
 				if(emergencies != null && !emergencies.isEmpty()) {
 					/*if(crossCars.peek() != null && crossCars.peek().equals(emergencies.get(0))) {
 						// check for priority
@@ -209,7 +237,7 @@ public class Car extends Agent {
 							if(Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(90) 
 								|| Math.abs(closerPos.getOrientation()-pos.getOrientation()) == Math.toRadians(270)) {
 								
-								ArrayList<OrientedPoint> crossings = carPath.getCrossingNear(tmpPos, seeD);
+								
 								Iterator<OrientedPoint> it2 = crossings.iterator();
 								while(it2.hasNext() && closerOutTrain == null) {
 									cross = it2.next();
