@@ -27,8 +27,10 @@ import fr.utbm.ia54.utils.RotateLabel;
 public class Car extends Agent {
 
 	private OrientedPoint pos;
+	private OrientedPoint tmpPos;
 	
 	private Float vToReach;
+	private float newV = 0;
 	private int safeD;
 	private int crossingD;
 	private int seeD;
@@ -80,12 +82,11 @@ public class Car extends Agent {
 	protected void live() {
 		boolean live = true;
 		
-		float newV = 0;
+		
 		float distance = 0;
 		float slowD = 0;
 		float toSlowV = 0;
 		int place =0;
-		OrientedPoint tmpPos;
 		
 		String closerInTrain = null;
 		OrientedPoint closerPosInTrain;
@@ -181,7 +182,7 @@ public class Car extends Agent {
 						for(OrientedPoint tmpCross : crossings) {
 							if (Environment.isInMyTrain(this.getName(), carEmr) && Functions.manhattanCar(carPosEmr,tmpCross)>1) {
 								if(!crossCars.contains(closerOutTrain))
-									definePriority(carEmr,carPosEmr);
+									definePriority(carEmr,carPosEmr,tmpCross);
 								if(getPriority(carEmr) || Functions.manhattanCar(tmpPos,tmpCross)<=1) {
 									emergencies.remove(carEmr);
 									neighbours.remove(carEmr);
@@ -310,8 +311,8 @@ public class Car extends Agent {
 							
 						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 						
-						definePriority(carEmr,carPosEmr);
-						priority = getPriority(carEmr);
+						definePriority(closerOutTrain,neighbours.get(closerOutTrain),cross);
+						priority = getPriority(closerOutTrain);
 						
 						
 						if(!priority) {
@@ -517,21 +518,22 @@ public class Car extends Agent {
 		return (int) (toRun/pos.speed);
 	}
 	
-	protected void definePriority(String carEmr, OrienedPoint carPosEmr) {
+	protected void definePriority(String car2, OrientedPoint car2Pos, OrientedPoint cross) {
 		boolean priority = false;
 		try {
-			priority = getPriority(carEmr);
+			priority = getPriority(car2);
 		}
 		catch(NullPointerException e) {
 			//no defined priority
 			//Priority goes to closest and fastest car
 			//we then inform that car
-			newD = Functions.manhattanCar(neighbours.get(closerOutTrain), cross)+Const.CAR_SIZE;
+			long dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
+			long newD = Functions.manhattanCar(car2Pos, cross)+Const.CAR_SIZE;
 			System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
-			System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/neighbours.get(closerOutTrain).getSpeed());
-			if(dToCross/newV < newD/neighbours.get(closerOutTrain).getSpeed()) {
+			System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed());
+			if(dToCross/newV < newD/car2Pos.getSpeed()) {
 				priority = true;
-				System.out.println(this.getNetworkID() + " have priority over " + closerOutTrain);
+				System.out.println(this.getNetworkID() + " have priority over " + car2);
 			}
 			else
 				priority = false;
@@ -539,16 +541,16 @@ public class Car extends Agent {
 			// send it to the car directly
 			// need to remove role creation with networkId in activate
 			String tmp = "crossing:"+ ((Boolean)(!priority)).toString()+":"+this.getNetworkID();
-			MainProgram.getEnv().sendMessageToId(closerOutTrain, tmp);
+			MainProgram.getEnv().sendMessageToId(car2, tmp);
 			//sendMessage(closerOutTrain, tmp);
-			crossCars.add(closerOutTrain);
-			crossCarStatus.put(closerOutTrain, priority);
+			crossCars.add(car2);
+			crossCarStatus.put(car2, priority);
 		}
 	}
 	
 	
 	protected Boolean getPriority(String name) {
-		Boolean priority = new Boolean();
+		boolean priority = false;
 		if(!crossCars.peek().isEmpty() && crossCars.peek().equals(name)) {
 			// check for priority
 			priority = crossCarStatus.get(name);
@@ -561,7 +563,7 @@ public class Car extends Agent {
 			priority = crossCarStatus.get(name);
 		} 
 		else {
-			//trow NullPointerException;
+			throw new NullPointerException();
 		}
 		return priority;
 	}
