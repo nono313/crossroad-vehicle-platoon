@@ -119,7 +119,7 @@ public class Functions {
 	
 	
 	public static boolean estDerriere(OrientedPoint other, OrientedPoint we) {
-		//other is behind us if our moving coordinate > his corresponding coordinate
+		//other is behind we if we moving coordinate > other corresponding coordinate
 		if((we.orientation == 2*Math.PI || we.orientation == 0) && we.y < other.y) {
 			return true;
 		} else if ((we.orientation == Math.PI) && we.y > other.y) {
@@ -127,6 +127,43 @@ public class Functions {
 		} else if ((we.orientation == Math.PI/2) && we.x > other.x) {
 			return true;
 		} else if ((we.orientation == 3*Math.PI/2) && we.x < other.x) {
+			return true;
+		} else {
+			return false;
+		}
+	}	
+	
+	
+	public static boolean isOutside(OrientedPoint car, OrientedPoint cross) {
+		if(isBefore(car, cross) || isAfter(car, cross))
+			return true;
+		else 
+			return false;
+	}
+	
+	public static boolean isBefore(OrientedPoint car, OrientedPoint cross) {
+		
+		if((car.orientation == 2*Math.PI || car.orientation == 0) && car.y > cross.y+Const.CAR_SIZE) {
+			return true;
+		} else if ((car.orientation == Math.PI) && car.y < cross.y-Const.CAR_SIZE) {
+			return true;
+		} else if ((car.orientation == Math.PI/2) && car.x < cross.x-Const.CAR_SIZE) {
+			return true;
+		} else if ((car.orientation == 3*Math.PI/2) && car.x > cross.x+Const.CAR_SIZE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public static boolean isAfter(OrientedPoint car, OrientedPoint cross) {
+		
+		if((car.orientation == 2*Math.PI || car.orientation == 0) && car.y+Const.CAR_SIZE < cross.y) {
+			return true;
+		} else if ((car.orientation == Math.PI) && car.y-Const.CAR_SIZE > cross.y) {
+			return true;
+		} else if ((car.orientation == Math.PI/2) && car.x-Const.CAR_SIZE > cross.x) {
+			return true;
+		} else if ((car.orientation == 3*Math.PI/2) && car.x+Const.CAR_SIZE < cross.x) {
 			return true;
 		} else {
 			return false;
