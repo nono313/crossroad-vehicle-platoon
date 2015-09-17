@@ -180,10 +180,10 @@ public class Car extends Agent {
 						carEmr = itEmr.next();
 						carPosEmr = emergencies.get(carEmr);
 						for(OrientedPoint tmpCross : crossings) {
-							if (Environment.isInMyTrain(this.getName(), carEmr) && Functions.manhattanCar(carPosEmr,tmpCross)>1) {
-								if(!crossCars.contains(closerOutTrain))
+							if (!Environment.isInMyTrain(this.getName(), carEmr) && Functions.isOutside(carPosEmr, tmpCross)) {
+								if(!crossCars.contains(carEmr))
 									definePriority(carEmr,carPosEmr,tmpCross);
-								if(getPriority(carEmr) || Functions.manhattanCar(tmpPos,tmpCross)<=1) {
+								if(getPriority(carEmr) || Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
 									emergencies.remove(carEmr);
 									neighbours.remove(carEmr);
 								}
@@ -525,13 +525,13 @@ public class Car extends Agent {
 		}
 		catch(NullPointerException e) {
 			//no defined priority
-			//Priority goes to closest and fastest car
+			//Priority goes to closest and fastest car (the one that could get out faster)
 			//we then inform that car
 			long dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
-			long newD = Functions.manhattanCar(car2Pos, cross)+Const.CAR_SIZE;
+			long newD = Functions.manhattan(car2Pos, cross)+Const.CAR_SIZE;
 			System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
 			System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed());
-			if(dToCross/newV < newD/car2Pos.getSpeed()) {
+			if(dToCross/(newV+1) < newD/(car2Pos.getSpeed()+1)) {
 				priority = true;
 				System.out.println(this.getNetworkID() + " have priority over " + car2);
 			}
