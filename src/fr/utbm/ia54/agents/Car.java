@@ -87,6 +87,7 @@ public class Car extends Agent {
 		float slowD = 0;
 		float toSlowV = 0;
 		int place =0;
+		float refV = 0;
 		
 		String closerInTrain = null;
 		OrientedPoint closerPosInTrain;
@@ -495,6 +496,13 @@ public class Car extends Agent {
 			distance = 0;
 			tmpPos = pos;
 		}
+		
+		if (newV < 0.9*refV || newV > 1.1*refV) {
+			//Priorities have become obsoletes
+			crossCars.clear();
+			refV = newV;
+		}
+		
 		moveTo(tmpPos);
 		HashMap<String, OrientedPoint> sendPos = new HashMap<String, OrientedPoint>();
 		sendPos.put(this.getNetworkID(), tmpPos);
