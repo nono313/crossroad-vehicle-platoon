@@ -141,7 +141,7 @@ public class Train extends Agent {
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("warningCrossing", dataRetrieved.get(i));
 							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
-							System.out.println(broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg));
+							broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg);
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
 							System.out.println("another train entered a crossing");
@@ -157,7 +157,7 @@ public class Train extends Agent {
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
 								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
-								System.out.println(sendMessage(m.getSender(), msg));
+								sendMessage(m.getSender(), msg);
 							}
 							
 						} else if (i.equals("confirmCrossing")) {

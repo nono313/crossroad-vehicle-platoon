@@ -31,6 +31,7 @@ public class Car extends Agent {
 	
 	private Float vToReach;
 	private float newV = 0;
+	float refV = 0;
 	private int safeD;
 	private int crossingD;
 	private int seeD;
@@ -87,7 +88,6 @@ public class Car extends Agent {
 		float slowD = 0;
 		float toSlowV = 0;
 		int place =0;
-		float refV = 0;
 		
 		String closerInTrain = null;
 		OrientedPoint closerPosInTrain;
@@ -497,8 +497,8 @@ public class Car extends Agent {
 			tmpPos = pos;
 		}
 		
-		if (newV < 0.9*refV || newV > 1.1*refV) {
-			//Priorities have become obsoletes
+		if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
+			System.out.println("Priorities have become obsoletes for " + this.getName());
 			crossCars.clear();
 			refV = newV;
 		}

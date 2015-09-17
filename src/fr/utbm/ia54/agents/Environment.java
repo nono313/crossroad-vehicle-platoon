@@ -146,7 +146,7 @@ public class Environment extends Agent{
 		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
 		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
 		frame2.pack();
-		frame2.setVisible(true);
+		//frame2.setVisible(true);
 		
 		JFreeChart xylineChart = ChartFactory.createXYLineChart(
 		         "interdistance of cars",
@@ -158,7 +158,7 @@ public class Environment extends Agent{
 		xylineChart.setBackgroundPaint(Color.white);
 		ChartFrame frame = new ChartFrame("INTERDISTANCE TRAIN 1", xylineChart);
 		frame.pack();
-		frame.setVisible(true);
+		//frame.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
@@ -209,7 +209,7 @@ public class Environment extends Agent{
 						carPos = positions.get(carId);
 						//System.out.println("train"+i+"car"+carId+"?");
 						if(Functions.manhattan(carPos,cross) < beaconRange ){//&& carPath.isInPath(carPos, i, cross, beaconRange)){
-							System.out.println("a train in a crossing, great");
+							//System.out.println("a train in a crossing, great");
 							//we add he train to the cross and alert him
 							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 							tmp.put("crossing", cross);
