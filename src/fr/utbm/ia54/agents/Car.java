@@ -193,7 +193,7 @@ public class Car extends Agent {
 						carEmr = itEmr.next();
 						carPosEmr = emergencies.get(carEmr);
 						for(OrientedPoint tmpCross : crossings) {
-							printings += "Other car is tested, ";
+							printings += "Other car is tested, its "+!Environment.isInMyTrain(this.getNetworkID(), carEmr) +" AND "+Functions.isOutside(carPosEmr, tmpCross);
 							if (!Environment.isInMyTrain(this.getNetworkID(), carEmr) && Functions.isOutside(carPosEmr, tmpCross)) {
 								printings += "not in my train AND outside the crossing;\n";
 								if(definePriority(carEmr,carPosEmr,tmpCross) || Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
@@ -203,6 +203,8 @@ public class Car extends Agent {
 									printings += "\n " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 									
 								}
+								printings += "We do not remove " + carEmr + " from emergencies, for reasons \n " + getPriority(carEmr);
+								printings += " OR " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 							}
 						}
 					}
@@ -572,21 +574,23 @@ public class Car extends Agent {
 	}
 	
 	protected boolean definePriority(String car2, OrientedPoint car2Pos, OrientedPoint cross) {
+		printings += " We try to reach priority between us and " + car2;
 		int priorityInt = getPriority(car2);
 		boolean priority = false;
 		if(priorityInt >= 0) {
 			priority = (priorityInt == 1) ? true : false;
 
-			printings += " We try to reach priority between us and " + car2 + ",the priority between us is " + priority + "\n";
+			 printings += ",the priority was defiend between us and is " + priority + "\n";
 		}
 		else {
 			//no defined priority
+			printings += ",the priority was NOT defiend between us.\n";
 			//Priority goes to closest and fastest car (the one that could get out faster)
 			//we then inform that car
 			long dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 			long newD = Functions.manhattan(car2Pos, cross)+Const.CAR_SIZE;
-			System.out.println(this.getNetworkID() + " dToCross/newV=" + dToCross/newV);
-			System.out.println(this.getNetworkID() + " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed());
+			printings +=  " dToCross/newV=" + dToCross/newV);
+			printings +=  " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed());
 			if(dToCross/(newV+1) < newD/(car2Pos.getSpeed()+1)) {
 				priority = true;
 				System.out.println(this.getNetworkID() + " have priority over " + car2);
