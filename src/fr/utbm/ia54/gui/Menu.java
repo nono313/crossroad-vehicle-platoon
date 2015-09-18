@@ -2,13 +2,17 @@ package fr.utbm.ia54.gui;
 
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,6 +32,7 @@ public class Menu extends JPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 
+	private JComboBox<String> carList;
 	private JButton flag = new JButton("Checkpoint");
 	private JButton priority = new JButton("Check Priorities");
 	private JButton quit = new JButton("Quit");
@@ -46,30 +51,31 @@ public class Menu extends JPanel implements ActionListener{
 	    // BoxLayout
 	    this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	    Box box1 = new Box(BoxLayout.X_AXIS);
-	    
 	    // Buttons
+	    carList = new JComboBox<String>(){
+
+	        @Override
+	        public Dimension getMaximumSize() {
+	            Dimension max = super.getMaximumSize();
+	            max.height = getPreferredSize().height;
+	            return max;
+	        }
+
+	    };
+	    carList.setVisible(false);
+	    
+	    //box1.add(new Label("Print Tour"));
+	    box1.add(carList);
 	    box1.add(flag);
 	    box1.add(priority);
 	    box1.add(quit);
-		
-	    // Input field (spinner)
-	    //box1.add(new JLabel("Speed : "));
-	    //SpinnerModel model = new SpinnerNumberModel(50, 0, 100, 10);     
-	    //spinner = new JSpinner(model);
-	    //spinner.setMaximumSize(new Dimension( 50, 24 ));
-	    //box1.add(spinner);
 	    
 	    // Listeners
+	    carList.addActionListener(this);
 		flag.addActionListener(this);
 		priority.addActionListener(this);
 		quit.addActionListener(this);
-		/*spinner.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				// TODO
-			}
-	    });*/
-	    
+
 	    this.add(box1);
 	  }
 	
@@ -89,12 +95,25 @@ public class Menu extends JPanel implements ActionListener{
 
 		if (source == flag) {
 			System.out.println("<---------------------------- CHECKPOINT ---------------------------->");
-		} else if (source == priority) {
+		}
+		else if (source == priority) {
 			System.out.println("<--------------------- CHECK of CARS PRIORITIES --------------------->");
 			environnement.printAllPriorities();
+		}
+		else if (source == carList) {
+			System.out.println("<--------------------- CHECK of A CAR SAYNGS --------------------->");
+			environnement.printAllTurn(carList.getSelectedItem());
 		} 
 		else if (source == quit)
 			myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING));
     }
+
+	public void addCarList(List<String> list) {
+		for(String tmp : list) {
+			carList.addItem(tmp);
+		}
+	    carList.setVisible(true);
+		
+	}
 }
 

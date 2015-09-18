@@ -59,6 +59,7 @@ public class MainProgram extends Agent{
         env = new Environment();
         launchAgent(env);
         mainFrame.getMyMenu().setEnvironnement(env);
+        env.setMenu(mainFrame.getMyMenu());
 		
         // 3 : Create trains 
         Train[] trains = new Train[Const.NB_TRAIN];

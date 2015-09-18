@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import fr.utbm.ia54.consts.Const;
+import fr.utbm.ia54.gui.Menu;
 import fr.utbm.ia54.main.MainProgram;
 import fr.utbm.ia54.path.CarPath;
 import fr.utbm.ia54.utils.Functions;
@@ -48,6 +49,7 @@ public class Environment extends Agent{
 	private HashMap<String, AgentAddress> addresses;
 	private static List<List<String>> carsId; // List of car's networkId (one list by train)
 	private Integer beaconRange;
+	private Menu menu;
 
 	/**
 	 * This is the first activated behavior in the life cycle of a MaDKit agent.
@@ -82,7 +84,9 @@ public class Environment extends Agent{
 				nb += carsId.get(i).size();
 			}
 		}
-		
+		//TODO Work only for 2 trains
+		menu.addCarList(carsId.get(0));
+		menu.addCarList(carsId.get(1));
 
 		/*DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Category 1", 43.2);
@@ -279,6 +283,7 @@ public class Environment extends Agent{
 					String group = message.getSender().getGroup();
 					//System.out.println(address +" has send it's position");
 					if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
+						System.out.println("adresse : " + address + ", and on stocke : "+ address.substring(0,address.length()-2));
 						carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
 					//}
 				}
@@ -413,5 +418,17 @@ public class Environment extends Agent{
 			String carGroup = Const.SIMU_GROUP + String.valueOf(i);
 			broadcastMessage(Const.MY_COMMUNITY, carGroup, Const.CAR_ROLE, msg);
 		}
+	}
+
+	public Menu getMenu() {
+		return menu;
+	}
+
+	public void setMenu(Menu menu) {
+		this.menu = menu;
+	}
+
+	public void printAllTurn(Object selectedItem) {
+		sendMessage(addresses.get(selectedItem), new StringMessage("Print"));
 	}
 }
