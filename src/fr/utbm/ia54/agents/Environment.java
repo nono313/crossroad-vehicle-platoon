@@ -283,7 +283,7 @@ public class Environment extends Agent{
 					String group = message.getSender().getGroup();
 					//System.out.println(address +" has send it's position");
 					if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
-						System.out.println("adresse : " + address + ", and on stocke : "+ address.substring(0,address.length()-2));
+						//System.out.println("adresse : " + address + ", and on stocke : "+ address.substring(0,address.length()-2));
 						carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
 					//}
 				}
@@ -391,8 +391,8 @@ public class Environment extends Agent{
 	public static boolean isInMyTrain(String me, String neighbour) {
 		boolean isInTrain = false;
 		int trainCounter = 1;
-		int carTrain = 0;
-		int otherCarTrain = 0;
+		int carTrain = -1;
+		int otherCarTrain = -2;
 		for (List<String> i: carsId) {
 			trainCounter++;
 			for(String j: i) {
@@ -403,9 +403,10 @@ public class Environment extends Agent{
 			}
 		}
 		
-		if(carTrain == otherCarTrain)
+		if(carTrain == otherCarTrain){
+			System.out.println(me+" and " + neighbour + " are in sape train");
 			isInTrain = true;
-		
+		}
 		
 		return isInTrain;
 	}

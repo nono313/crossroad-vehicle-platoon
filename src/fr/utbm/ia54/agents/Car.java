@@ -1,9 +1,11 @@
 package fr.utbm.ia54.agents;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -133,6 +135,8 @@ public class Car extends Agent {
 			getNewMessages();
 			printings += "I'm " + this.getName() + ", car " + position + " of train " + numTrain + ". My color is " + Const.CAR_COLOR[carColor] + ".\n";
 			printings += this.getNetworkID() + "\n" + this.getSimpleNetworkID() + "\n";
+			printings += "Speed to reach is " + vToReach + ", and safeD is " + safeD + "\n";
+			
 			
 /*OPTIMAL SITUATION ***************************************************/
 			// adapt speed according to speed objectives and ACC-eleration and DECC-eleration
@@ -187,6 +191,7 @@ public class Car extends Agent {
 				
 				if(emergencies != null) {
 					Iterator<String> itEmr = emergencies.keySet().iterator();
+					List<String> tmpList = new ArrayList<String>();
 					String carEmr;
 					OrientedPoint carPosEmr;
 					while(!emergencies.isEmpty() && itEmr.hasNext()) {
@@ -197,8 +202,7 @@ public class Car extends Agent {
 							if (!Environment.isInMyTrain(this.getNetworkID(), carEmr) && Functions.isOutside(carPosEmr, tmpCross)) {
 								printings += "not in my train AND outside the crossing;\n";
 								if(definePriority(carEmr,carPosEmr,tmpCross) || Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
-									emergencies.remove(carEmr);
-									neighbours.remove(carEmr);
+									tmpList.add(carEmr);
 									printings += "We remove " + carEmr + " from emergencies, for reasons \n " + getPriority(carEmr);
 									printings += "\n " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 									
@@ -207,6 +211,10 @@ public class Car extends Agent {
 								printings += " OR " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 							}
 						}
+					}
+					for(String i : tmpList) {
+						emergencies.remove(i);
+						neighbours.remove(i);
 					}
 				}
 				
@@ -538,11 +546,11 @@ public class Car extends Agent {
 
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
 		
-		if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
-			System.out.println("Priorities have become obsoletes for " + this.getName());
+		/*if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
+			//System.out.println("Priorities have become obsoletes for " + this.getName());
 			crossCars.clear();
 			refV = newV;
-		}
+		}*/
 		
 		moveTo(tmpPos);
 		HashMap<String, OrientedPoint> sendPos = new HashMap<String, OrientedPoint>();
@@ -575,7 +583,14 @@ public class Car extends Agent {
 	
 	protected boolean definePriority(String car2, OrientedPoint car2Pos, OrientedPoint cross) {
 		printings += " We try to reach priority between us and " + car2;
-		int priorityInt = getPriority(car2);
+		int priorityInt;
+		try {
+			priorityInt = getPriority(car2);
+		}
+		catch (NullPointerException e) {
+			printings += "priorities not found, we build it.\n";
+			priorityInt = -1;
+		}
 		boolean priority = false;
 		if(priorityInt >= 0) {
 			priority = (priorityInt == 1) ? true : false;
@@ -589,11 +604,11 @@ public class Car extends Agent {
 			//we then inform that car
 			long dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 			long newD = Functions.manhattan(car2Pos, cross)+Const.CAR_SIZE;
-			printings +=  " dToCross/newV=" + dToCross/newV);
-			printings +=  " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed());
+			printings +=  " dToCross/newV=" + dToCross/newV;
+			printings +=  " newD/neighbours.get(closerOutTrain).getSpeed()=" + newD/car2Pos.getSpeed();
 			if(dToCross/(newV+1) < newD/(car2Pos.getSpeed()+1)) {
 				priority = true;
-				System.out.println(this.getNetworkID() + " have priority over " + car2);
+				//System.out.println(this.getNetworkID() + " have priority over " + car2);
 			}
 			else
 				priority = false;
