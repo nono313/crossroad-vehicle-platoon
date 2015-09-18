@@ -277,7 +277,7 @@ public class Environment extends Agent{
 				} else {*/
 					positions.putAll(tmp);
 					// substring to convert agent network id to network id
-					addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getReceiver().getAgentNetworkID().length()-2), message.getSender());
+					addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getSender().getAgentNetworkID().length()-2), message.getSender());
 					
 					String address = message.getSender().getAgentNetworkID();
 					String group = message.getSender().getGroup();
