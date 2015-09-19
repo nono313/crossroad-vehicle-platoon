@@ -106,16 +106,16 @@ public class Environment extends Agent{
 		frame.pack();
 		frame.setVisible(true);*/
 
-		List<XYSeries> series = new ArrayList<XYSeries>();
+	//	List<XYSeries> series = new ArrayList<XYSeries>();
 		List<XYSeries> series2 = new ArrayList<XYSeries>();
-		final XYSeries  train0car2 = new XYSeries ( "train0car2" );
+	/*	final XYSeries  train0car2 = new XYSeries ( "train0car2" );
 		series.add(train0car2);
 		final XYSeries  train0car3 = new XYSeries ( "train0car3" ); 
 		series.add(train0car3);  
 		final XYSeries  train0car4 = new XYSeries ( "train0car4" );
 		series.add(train0car4);   
 		final XYSeries  train0car5 = new XYSeries ( "train0car5" );
-		series.add(train0car5);   
+		series.add(train0car5);  */ 
 		
 		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
 		series2.add(train0car2);
@@ -128,7 +128,7 @@ public class Environment extends Agent{
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
 
-		XYSeriesCollection data = new XYSeriesCollection( );
+	//	XYSeriesCollection data = new XYSeriesCollection( );
 		//data.addSeries(train0car2);
 		//data.addSeries(train0car3);
 		//data.addSeries(train0car4);
@@ -150,9 +150,9 @@ public class Environment extends Agent{
 		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
 		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
 		frame2.pack();
-		//frame2.setVisible(true);
+		frame2.setVisible(true);
 		
-		JFreeChart xylineChart = ChartFactory.createXYLineChart(
+	/*	JFreeChart xylineChart = ChartFactory.createXYLineChart(
 		         "interdistance of cars",
 		         "time" ,
 		         "distance from previous car" ,
@@ -161,7 +161,7 @@ public class Environment extends Agent{
 		         true , true , false);
 		xylineChart.setBackgroundPaint(Color.white);
 		ChartFrame frame = new ChartFrame("INTERDISTANCE TRAIN 1", xylineChart);
-		frame.pack();
+		frame.pack();*/
 		//frame.setVisible(true);
 		
 		/*Here we simulate the environment with beaconised's crossings
