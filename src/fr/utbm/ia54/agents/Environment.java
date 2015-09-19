@@ -230,16 +230,16 @@ public class Environment extends Agent{
 			
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
-				/*for (*/int i=0; /*i<series.size();i++) {*/
-					/*for (*/int j=0; /*j<series.get(i).size()-1;j++) {*/
-					//interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
-					//series.get(j).add(runningT.intValue(), interdistance); 
-					i++;
-					interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
-					series2.get(j).add(runningT.intValue(), interdistance); 	
-						//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
-				//	}
-				//}  
+				for (int j=0; j<series.get(0).size()-1;j++) {
+				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(j)),positions.get(carsId.get(0).get(j+1)));
+				series.get(j).add(runningT.intValue(), interdistance); 	
+					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
+				}
+				for (int j=0; j<series2.get(1).size()-1;j++) {
+				interdistance = Functions.manhattan(positions.get(carsId.get(1).get(j)),positions.get(carsId.get(1).get(j+1)));
+				series2.get(j).add(runningT.intValue(), interdistance); 	
+					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
+				}
 			}
 		}
 	}
