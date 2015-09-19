@@ -23,7 +23,7 @@ public class MainFrame {
 		
 		/* Frame */
 		myFrame = new JFrame("Car Crossing");
-		myFrame.setSize(1410, 760);
+		myFrame.setSize(1850, 1000);
 		myFrame.setLocationRelativeTo(null); // center depending on the screen
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		BoxLayout mainLayout = new BoxLayout(myFrame.getContentPane(), BoxLayout.Y_AXIS);
