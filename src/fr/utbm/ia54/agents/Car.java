@@ -445,7 +445,13 @@ public class Car extends Agent {
 					printings += " Safe distance is now " + Integer.valueOf(data[1]) + "\n";
 				} 
 				else if (data[0].equals("crossing")) {
-					String id = data[2].substring(0, message.getReceiver().getAgentNetworkID().length()-2);
+					String id = new String();
+					try {
+						id = data[2].substring(0, message.getSender().getAgentNetworkID().length()-2);
+					}
+					catch (Exception e) {
+						System.out.println("Error in messaging priority, we get the message" + message.getContent() + " from " + message.getSender() + " we are car : " + this.getNetworkID());
+					}
 					
 					printings += id + " tels us that the priority between us is " + Boolean.valueOf(data[1]) + "\n";
 					

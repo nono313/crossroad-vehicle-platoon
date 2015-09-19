@@ -396,15 +396,14 @@ public class Environment extends Agent{
 		for (List<String> i: carsId) {
 			trainCounter++;
 			for(String j: i) {
-				if (j == me)
+				if (j.equals(me))
 					carTrain = trainCounter;
-				if (j == neighbour)
+				if (j.equals(neighbour))
 					otherCarTrain = trainCounter;
 			}
 		}
 		
 		if(carTrain == otherCarTrain){
-			System.out.println(me+" and " + neighbour + " are in sape train");
 			isInTrain = true;
 		}
 		
