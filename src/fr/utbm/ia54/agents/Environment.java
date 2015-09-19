@@ -2,6 +2,8 @@ package fr.utbm.ia54.agents;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -147,10 +149,11 @@ public class Environment extends Agent{
 		         data2 ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
+		xylineChart2.setBackgroundPaint(Color.gray);
 		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
-		ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
-		frame2.pack();
-		frame2.setVisible(true);
+		//ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
+		//frame2.pack();
+		//frame2.setVisible(true);
 		
 		JFreeChart xylineChart = ChartFactory.createXYLineChart(
 		         "interdistance of cars",
@@ -160,7 +163,12 @@ public class Environment extends Agent{
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
 		xylineChart.setBackgroundPaint(Color.white);
-		ChartFrame frame = new ChartFrame("INTERDISTANCE TRAIN 1", xylineChart);
+		
+		
+		Frame frame = new Frame("INTERDISTANCE TRAIN");//, xylineChart);
+		frame.setLayout(new GridLayout(1, 0));
+		//frame.add(xylineChart);
+		//frame.add(xylineChart2);
 		frame.pack();
 		frame.setVisible(true);
 		
@@ -230,12 +238,13 @@ public class Environment extends Agent{
 			
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
-				for (int j=0; j<series.size()-1;j++) {
+				for (int j=0; j<series.size();j++) {
+
 				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(j)),positions.get(carsId.get(0).get(j+1)));
 				series.get(j).add(runningT.intValue(), interdistance); 	
 					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
 				}
-				for (int j=0; j<series2.size()-1;j++) {
+				for (int j=0; j<series2.size();j++) {
 				interdistance = Functions.manhattan(positions.get(carsId.get(1).get(j)),positions.get(carsId.get(1).get(j+1)));
 				series2.get(j).add(runningT.intValue(), interdistance); 	
 					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
