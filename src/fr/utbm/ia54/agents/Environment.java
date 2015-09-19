@@ -194,10 +194,11 @@ public class Environment extends Agent{
 					carGroup = Const.SIMU_GROUP + String.valueOf(i);
 					
 					//if the train is checked in, we verify it's still in
-					if(groups.contains(carGroup)) {/*
+					//TODO : do it when updates of positions fo first and last car
+					if(groups.contains(carGroup)) {
 						carId = carsId.get(i).get(carsId.get(i).size()-1);
 						carPos = positions.get(carId);
-						System.out.println("crosspassed : " + carId + ", and " +cross);
+						//System.out.println("crosspassed : " + carId + ", and " +cross);
 						if(crossPassed(carPos,cross)) {
 							groups.remove(groups.indexOf(carGroup));
 							
@@ -206,7 +207,7 @@ public class Environment extends Agent{
 							
 							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
 							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
-						}*/
+						}
 					}
 					else {// otherwise we check if it's entering the crossing
 						carId = carsId.get(i).get(0);
