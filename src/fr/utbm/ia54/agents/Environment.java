@@ -142,6 +142,8 @@ public class Environment extends Agent{
 		data2.addSeries(train1car4);
 		data2.addSeries(train1car5);
 
+
+
 		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
 		         "interdistance of cars",
 		         "time" ,
@@ -165,8 +167,15 @@ public class Environment extends Agent{
 		xylineChart.setBackgroundPaint(Color.white);
 		
 		
+		
 		Frame frame = new Frame("INTERDISTANCE TRAIN");//, xylineChart);
 		frame.setLayout(new GridLayout(1, 0));
+		ChartPanel panel1 = new ChartPanel(xylineChart);
+		frame.add(panel1);
+		ChartPanel panel2 = new ChartPanel(xylineChart2);
+		frame.add(panel2);
+		//http://www.jfree.org/jfreechart/api/javadoc/org/jfree/chart/ChartPanel.html
+		//https://docs.oracle.com/javase/tutorial/uiswing/layout/grid.html
 		//frame.add(xylineChart);
 		//frame.add(xylineChart2);
 		frame.pack();
