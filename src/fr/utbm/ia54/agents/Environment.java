@@ -118,13 +118,13 @@ public class Environment extends Agent{
 		series.add(train0car5);  */ 
 		
 		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
-		series2.add(train0car2);
+		series2.add(train1car2);
 		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
-		series2.add(train0car3);
+		series2.add(train1car3);
 		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
-		series2.add(train0car4);
+		series2.add(train1car4);
 		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
-		series2.add(train0car5);  
+		series2.add(train1car5);  
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
 
