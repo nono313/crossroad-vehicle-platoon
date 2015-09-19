@@ -286,16 +286,6 @@ public class Car extends Agent {
 					double dToCross;
 					
 					if (!closerInTrain.isEmpty()) {
-						/*
-						 TODO : si même qu'avant, estimation rapide de l'accélération avec coefitient de conservation de l'ancienne valeur
-						
-						différence vitesse
-						temps restant avant safeD
-						
-						nombre d'etapes restantes et nombre d'etapes necessaires au freinage
-						
-						=> acceleration pour suivi*/
-						
 						
 						if(knownCars.containsKey(closerInTrain)) {
 							newD = Functions.manhattanCar(neighbours.get(closerInTrain), tmpPos);
@@ -330,24 +320,10 @@ public class Car extends Agent {
 						
 					
 					if(!closerOutTrain.isEmpty()) {
-						/*
-						 *TODO :  si même qu'avant estimation rapide de l'acélération avec prise en compte de l'ancien calcul (selon priorité)
-					
-						definir priorité 
-						
-						si priorité
-							on roule a balle
-						si non
-							estimer temps/ distance avant libération du carfour par prioritaire
-							déduire vmax, accélaration de croisement
-						 * 
-						 */
 							
 						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 						
-						
 						priority = definePriority(closerOutTrain,neighbours.get(closerOutTrain),cross);
-						
 						
 						if(!priority) {
 							//do we have to reduce speed ?
@@ -359,14 +335,10 @@ public class Car extends Agent {
 						else
 							//TODO : worry about next car to cross over ?
 							toSlowVOutTrain = 0;
-						
 					}
-					
 					
 					//We now now how much we need to slow down for each situation. We take care of the most important one
 					toSlowV = (toSlowVOutTrain < toSlowVInTrain) ? toSlowVInTrain : toSlowVOutTrain ;
-					
-
 					printings += "cars from the neibghors have us make slowing down : " + toSlowV + ".\n";
 					
 					knownCars = tmpKnownCars;				
@@ -552,7 +524,7 @@ public class Car extends Agent {
 
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
 		
-		if ((newV < 0.8*refV || newV > 1.2*refV) && !crossCars.isEmpty()){
+		if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
 			//System.out.println("Priorities have become obsoletes for " + this.getName());
 			crossCars.clear();
 			refV = newV;
