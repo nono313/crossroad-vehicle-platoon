@@ -374,7 +374,7 @@ public class Car extends Agent {
 			}//no neighbours
 /* APPLICATION OF WHAT IS PLANNED ********************/
 			executingRun(newV, toSlowV, distance, tmpPos);
-			pause(Const.PAS*10);
+			pause(Const.PAS);
 		}//while live
 	}
 
