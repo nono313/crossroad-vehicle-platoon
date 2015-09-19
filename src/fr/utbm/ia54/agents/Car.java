@@ -374,7 +374,7 @@ public class Car extends Agent {
 			}//no neighbours
 /* APPLICATION OF WHAT IS PLANNED ********************/
 			executingRun(newV, toSlowV, distance, tmpPos);
-			pause(Const.PAS);
+			pause(Const.PAS*10);
 		}//while live
 	}
 
@@ -552,11 +552,11 @@ public class Car extends Agent {
 
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
 		
-		/*if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
+		if ((newV < 0.8*refV || newV > 1.2*refV) && !crossCars.isEmpty()){
 			//System.out.println("Priorities have become obsoletes for " + this.getName());
 			crossCars.clear();
 			refV = newV;
-		}*/
+		}
 		
 		moveTo(tmpPos);
 		HashMap<String, OrientedPoint> sendPos = new HashMap<String, OrientedPoint>();
