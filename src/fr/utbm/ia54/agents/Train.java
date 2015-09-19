@@ -133,7 +133,7 @@ public class Train extends Agent {
 					HashMap<String,OrientedPoint> dataRetrieved = (HashMap<String, OrientedPoint>) o;
 					for(String i : dataRetrieved.keySet()) {
 						if(i.equals("crossing")) {
-							System.out.println("our train entered a crossing");
+							System.out.println("Train" + numTrain + " entered a crossing");
 							
 							soloCrossing.add(dataRetrieved.get(i));
 							
@@ -144,7 +144,7 @@ public class Train extends Agent {
 							broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg);
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
-							System.out.println("another train entered a crossing");
+							System.out.println("another train entered a crossing where train" + numTrain + " is.");
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
@@ -169,9 +169,23 @@ public class Train extends Agent {
 							changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
 							}
 						} else if (i.equals("exitCrossing")) {
-							System.out.println("our train is getting out of the crossing");
+							System.out.println("Train" + numTrain + " is getting out of the crossing");
 							//we have left the crossing, return to normal state
 							soloCrossing.remove(dataRetrieved.get(i));
+							if(notAloneCrossing.contains(dataRetrieved.get(i))) {
+								notAloneCrossing.remove(dataRetrieved.get(i));
+								changeCarBehavior(new ObjectMessage<String>("speed:"+speed));
+								changeCarBehavior(new ObjectMessage<String>("safeD:"+safeD));
+								
+								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+								tmp.put("warningExitCrossing", dataRetrieved.get(i));
+								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+								broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg);
+							}
+						}
+						else if (i.equals("warningExitCrossing")) {
+							System.out.println("Train" + numTrain + " is finally alone in the crossing");
+							//we have left the crossing, return to normal state
 							notAloneCrossing.remove(dataRetrieved.get(i));
 							changeCarBehavior(new ObjectMessage<String>("speed:"+speed));
 							changeCarBehavior(new ObjectMessage<String>("safeD:"+safeD));
