@@ -24,6 +24,7 @@ import madkit.message.StringMessage;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
@@ -107,9 +108,11 @@ public class Environment extends Agent{
 		ChartFrame frame = new ChartFrame("First", chart);
 		frame.pack();
 		frame.setVisible(true);*/
+		int interdistance;
+		Long runningT = System.currentTimeMillis();
+
 
 		List<XYSeries> series = new ArrayList<XYSeries>();
-		List<XYSeries> series2 = new ArrayList<XYSeries>();
 		final XYSeries  train0car2 = new XYSeries ( "train0car2" );
 		series.add(train0car2);
 		final XYSeries  train0car3 = new XYSeries ( "train0car3" ); 
@@ -118,7 +121,22 @@ public class Environment extends Agent{
 		series.add(train0car4);   
 		final XYSeries  train0car5 = new XYSeries ( "train0car5" );
 		series.add(train0car5);  
+		XYSeriesCollection data = new XYSeriesCollection( );
+		data.addSeries(train0car2);
+		data.addSeries(train0car3);
+		data.addSeries(train0car4);
+		data.addSeries(train0car5);
+		JFreeChart xylineChart = ChartFactory.createXYLineChart(
+		         "interdistance for train0",
+		         "time" ,
+		         "distance from previous car" ,
+		         data ,
+		         PlotOrientation.VERTICAL ,
+		         true , true , false);
+		xylineChart.setBackgroundPaint(Color.white);
 		
+		
+		List<XYSeries> series2 = new ArrayList<XYSeries>();
 		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
 		series2.add(train1car2);
 		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
@@ -127,25 +145,13 @@ public class Environment extends Agent{
 		series2.add(train1car4);
 		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
 		series2.add(train1car5);  
-		int interdistance;
-		Long runningT = System.currentTimeMillis();
-
-		XYSeriesCollection data = new XYSeriesCollection( );
-		data.addSeries(train0car2);
-		data.addSeries(train0car3);
-		data.addSeries(train0car4);
-		data.addSeries(train0car5);
-		
 		XYSeriesCollection data2 = new XYSeriesCollection( );
 		data2.addSeries(train1car2);
 		data2.addSeries(train1car3);
 		data2.addSeries(train1car4);
 		data2.addSeries(train1car5);
-
-
-
 		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
-		         "interdistance of cars",
+		         "interdistance for train1",
 		         "time" ,
 		         "distance from previous car" ,
 		         data2 ,
@@ -157,27 +163,39 @@ public class Environment extends Agent{
 		//frame2.pack();
 		//frame2.setVisible(true);
 		
-		JFreeChart xylineChart = ChartFactory.createXYLineChart(
-		         "interdistance of cars",
+		
+		List<XYSeries> series3 = new ArrayList<XYSeries>();
+		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
+		series3.add(train1car2);
+		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
+		series3.add(train1car3);
+		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
+		series3.add(train1car4);
+		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
+		series3.add(train1car5);  
+		XYSeriesCollection data3 = new XYSeriesCollection( );
+		data3.addSeries(train1car2);
+		data3.addSeries(train1car3);
+		data3.addSeries(train1car4);
+		data3.addSeries(train1car5);
+		JFreeChart xylineChart3 = ChartFactory.createXYLineChart(
+		         "interdistance for train1",
 		         "time" ,
 		         "distance from previous car" ,
-		         data ,
+		         data3 ,
 		         PlotOrientation.VERTICAL ,
 		         true , true , false);
-		xylineChart.setBackgroundPaint(Color.white);
-		
+		xylineChart3.setBackgroundPaint(Color.gray);
 		
 		
 		Frame frame = new Frame("INTERDISTANCE TRAIN");//, xylineChart);
-		frame.setLayout(new GridLayout(1, 0));
+		frame.setLayout(new GridLayout(2, 2));
 		ChartPanel panel1 = new ChartPanel(xylineChart);
 		frame.add(panel1);
 		ChartPanel panel2 = new ChartPanel(xylineChart2);
 		frame.add(panel2);
-		//http://www.jfree.org/jfreechart/api/javadoc/org/jfree/chart/ChartPanel.html
-		//https://docs.oracle.com/javase/tutorial/uiswing/layout/grid.html
-		//frame.add(xylineChart);
-		//frame.add(xylineChart2);
+		ChartPanel panel3 = new ChartPanel(xylineChart3);
+		frame.add(panel3);
 		frame.pack();
 		frame.setVisible(true);
 		
