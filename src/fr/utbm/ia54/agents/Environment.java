@@ -91,52 +91,65 @@ public class Environment extends Agent{
 		menu.addCarList(carsId.get(0));
 		menu.addCarList(carsId.get(1));
 
-		/*DefaultPieDataset data = new DefaultPieDataset();
-		data.setValue("Category 1", 43.2);
-		data.setValue("Category 2", 27.9);
-		data.setValue("Category 3", 79.5);
-		// create a chart...
-		
-		JFreeChart chart = ChartFactory.createPieChart(
-		"Sample Pie Chart",
-		data,
-		true, // legend?
-		true, // tooltips?
-		false // URLs?
-		);
-		// create and display a frame...
-		ChartFrame frame = new ChartFrame("First", chart);
-		frame.pack();
-		frame.setVisible(true);*/
+	/*********************stats*****************************/
 		int interdistance;
 		Long runningT = System.currentTimeMillis();
-
-
-		List<XYSeries> series = new ArrayList<XYSeries>();
-		final XYSeries  train0car2 = new XYSeries ( "train0car2" );
-		series.add(train0car2);
-		final XYSeries  train0car3 = new XYSeries ( "train0car3" ); 
-		series.add(train0car3);  
-		final XYSeries  train0car4 = new XYSeries ( "train0car4" );
-		series.add(train0car4);   
-		final XYSeries  train0car5 = new XYSeries ( "train0car5" );
-		series.add(train0car5);  
-		XYSeriesCollection data = new XYSeriesCollection( );
-		data.addSeries(train0car2);
-		data.addSeries(train0car3);
-		data.addSeries(train0car4);
-		data.addSeries(train0car5);
-		JFreeChart xylineChart = ChartFactory.createXYLineChart(
-		         "interdistance for train0",
-		         "time" ,
-		         "distance from previous car" ,
-		         data ,
-		         PlotOrientation.VERTICAL ,
-		         true , true , false);
-		xylineChart.setBackgroundPaint(Color.white);
+		List<XYSeriesCollection> seriesInterD = new ArrayList<XYSeriesCollection>();
+		List<XYSeriesCollection> seriesSpeed = new ArrayList<XYSeriesCollection>();
 		
 		
-		List<XYSeries> series2 = new ArrayList<XYSeries>();
+		Frame frame = new Frame("Simulation Stats");
+		frame.setLayout(new GridLayout(2, 0));
+
+		for (int i = 0 ; i <= carsId.size(); i++) {
+			//by train we prepare 2 graphics, one for interdistance between cars and the other for cars speed
+			
+			XYSeriesCollection dataD = new XYSeriesCollection( );
+			seriesInterD.add(dataD);
+			XYSeriesCollection dataV = new XYSeriesCollection( );
+			seriesSpeed.add(dataV);
+			
+			for (int j = 0; j<carsId.get(i).size(); j++) {
+				final XYSeries serieD = new XYSeries ( "Car" + j + " and Car" + j+1 );
+				dataD.addSeries(serieD);
+				final XYSeries serieV = new XYSeries ( "Car" + j );
+				dataV.addSeries(serieV);
+			}
+			final XYSeries serieV = new XYSeries ( "Car" + carsId.get(i).size() );
+			dataV.addSeries(serieV);
+			
+			
+			JFreeChart xylineChartD = ChartFactory.createXYLineChart(
+		         	"interdistance for train0",
+		         	"time" ,
+		         	"distance from previous car" ,
+		         	dataD,
+		         	PlotOrientation.VERTICAL ,
+		         	true , true , false);
+			JFreeChart xylineChartV = ChartFactory.createXYLineChart(
+		         	"speed for train0",
+		         	"time" ,
+		         	"speed of car" ,
+		         	dataV,
+		         	PlotOrientation.VERTICAL ,
+		         	true , true , false);
+		        if(i%2==0) {
+				xylineChartD.setBackgroundPaint(Color.white);
+				xylineChartV.setBackgroundPaint(Color.gray);
+		        }	
+			else {
+				xylineChartV.setBackgroundPaint(Color.white);
+				xylineChartD.setBackgroundPaint(Color.gray);
+			}
+			
+			ChartPanel panelD = new ChartPanel(xylineChartD);
+			frame.add(panelD);
+			ChartPanel panelV = new ChartPanel(xylineChartV);
+			frame.add(panelV);
+		}
+		
+		
+		/*List<XYSeries> series2 = new ArrayList<XYSeries>();
 		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
 		series2.add(train1car2);
 		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
@@ -188,14 +201,12 @@ public class Environment extends Agent{
 		xylineChart3.setBackgroundPaint(Color.gray);
 		
 		
-		Frame frame = new Frame("INTERDISTANCE TRAIN");//, xylineChart);
-		frame.setLayout(new GridLayout(2, 2));
-		ChartPanel panel1 = new ChartPanel(xylineChart);
-		frame.add(panel1);
+		
 		ChartPanel panel2 = new ChartPanel(xylineChart2);
 		frame.add(panel2);
 		ChartPanel panel3 = new ChartPanel(xylineChart3);
-		frame.add(panel3);
+		frame.add(panel3);*/
+		
 		frame.pack();
 		frame.setVisible(true);
 		
@@ -265,7 +276,16 @@ public class Environment extends Agent{
 			
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
-				for (int j=0; j<series.size();j++) {
+				
+				for (int i = 0 ; i <= carsId.size(); i++) {
+					for (int j = 0; j<carsId.get(i).size(); j++) {
+						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
+						seriesInterD.get(i).get(j).add(runningT.intValue(), interdistance); 
+						seriesSpeed.get(i).get(j).add(runningT.intValue(), positions.get(carsId.get(i).get(j).getSpeed());
+					}
+					seriesSpeed.get(i).get(j).add(runningT.intValue(), positions.get(carsId.get(i).get(j).getSpeed());
+				}
+				/*for (int j=0; j<series.size();j++) {
 
 				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(j)),positions.get(carsId.get(0).get(j+1)));
 				series.get(j).add(runningT.intValue(), interdistance); 	
@@ -275,7 +295,7 @@ public class Environment extends Agent{
 				interdistance = Functions.manhattan(positions.get(carsId.get(1).get(j)),positions.get(carsId.get(1).get(j+1)));
 				series2.get(j).add(runningT.intValue(), interdistance); 	
 					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
-				}
+				}*/
 			}
 		}
 	}
