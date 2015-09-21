@@ -35,10 +35,13 @@ public class Menu extends JPanel implements ActionListener{
 	private JComboBox<String> carList;
 	private JButton flag = new JButton("Checkpoint");
 	private JButton priority = new JButton("Check Priorities");
+	private JButton stats = new JButton("Print Statistics");
 	private JButton quit = new JButton("Quit");
 	//private JSpinner spinner;
 	private JFrame myFrame;
 	private Environment environnement;
+	
+	private boolean statsPrinted = false;
 	
 	
 	/**
@@ -67,12 +70,14 @@ public class Menu extends JPanel implements ActionListener{
 	    //box1.add(new Label("Print Tour"));
 	    box1.add(carList);
 	    box1.add(flag);
+	    box1.add(stats);
 	    box1.add(priority);
 	    box1.add(quit);
 	    
 	    // Listeners
 	    carList.addActionListener(this);
 		flag.addActionListener(this);
+		stats.addActionListener(this);
 		priority.addActionListener(this);
 		quit.addActionListener(this);
 
@@ -103,6 +108,11 @@ public class Menu extends JPanel implements ActionListener{
 		else if (source == carList) {
 			System.out.println("<--------------------- CHECK of A CAR SAYNGS --------------------->");
 			environnement.printAllTurn(carList.getSelectedItem());
+		} 
+		else if (source == stats) {
+			statsPrinted = !statsPrinted;
+			System.out.println("<--------------------- print of stats = "+statsPrinted+" --------------------->");
+			environnement.printStats(statsPrinted);
 		} 
 		else if (source == quit)
 			myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING));

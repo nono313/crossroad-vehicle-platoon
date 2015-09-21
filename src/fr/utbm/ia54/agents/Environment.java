@@ -1,13 +1,10 @@
 package fr.utbm.ia54.agents;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import fr.utbm.ia54.consts.Const;
@@ -23,23 +20,9 @@ import madkit.message.ObjectMessage;
 import madkit.message.StringMessage;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.DomainOrder;
-import org.jfree.data.general.DatasetChangeListener;
-import org.jfree.data.general.DatasetGroup;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.general.SeriesException;
-import org.jfree.data.time.Second;
-import org.jfree.data.time.TimePeriodValue;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeTableXYDataset;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYDatasetTableModel;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -53,6 +36,7 @@ public class Environment extends Agent{
 	private static List<List<String>> carsId; // List of car's networkId (one list by train)
 	private Integer beaconRange;
 	private Menu menu;
+	private Frame frame;
 
 	/**
 	 * This is the first activated behavior in the life cycle of a MaDKit agent.
@@ -98,10 +82,10 @@ public class Environment extends Agent{
 		List<XYSeriesCollection> seriesSpeed = new ArrayList<XYSeriesCollection>();
 		
 		
-		Frame frame = new Frame("Simulation Stats");
+		frame = new Frame("Simulation Stats");
 		frame.setLayout(new GridLayout(2, 0));
 
-		for (int i = 0 ; i <= carsId.size(); i++) {
+		for (int i = 0 ; i < carsId.size(); i++) {
 			//by train we prepare 2 graphics, one for interdistance between cars and the other for cars speed
 			
 			XYSeriesCollection dataD = new XYSeriesCollection( );
@@ -109,8 +93,8 @@ public class Environment extends Agent{
 			XYSeriesCollection dataV = new XYSeriesCollection( );
 			seriesSpeed.add(dataV);
 			
-			for (int j = 0; j<carsId.get(i).size(); j++) {
-				final XYSeries serieD = new XYSeries ( "Car" + j + " and Car" + j+1 );
+			for (int j = 0; j<carsId.get(i).size()-1; j++) {
+				final XYSeries serieD = new XYSeries ( "Car" + j + " and Car" + (j+1) );
 				dataD.addSeries(serieD);
 				final XYSeries serieV = new XYSeries ( "Car" + j );
 				dataV.addSeries(serieV);
@@ -208,7 +192,7 @@ public class Environment extends Agent{
 		frame.add(panel3);*/
 		
 		frame.pack();
-		frame.setVisible(true);
+		frame.setVisible(false);
 		
 		/*Here we simulate the environment with beaconised's crossings
 		  When a train's first car enter it's range, we send a message to the train (upcoming crossing).
@@ -277,13 +261,13 @@ public class Environment extends Agent{
 			if(runningT + Const.PAS <= System.currentTimeMillis()) {
 				runningT = System.currentTimeMillis();
 				
-				for (int i = 0 ; i <= carsId.size(); i++) {
-					for (int j = 0; j<carsId.get(i).size(); j++) {
+				for (int i = 0 ; i < carsId.size(); i++) {
+					for (int j = 0; j<carsId.get(i).size()-1; j++) {
 						interdistance = Functions.manhattan(positions.get(carsId.get(i).get(j)),positions.get(carsId.get(i).get(j+1)));
-						seriesInterD.get(i).get(j).add(runningT.intValue(), interdistance); 
-						seriesSpeed.get(i).get(j).add(runningT.intValue(), positions.get(carsId.get(i).get(j).getSpeed());
+						seriesInterD.get(i).getSeries(j).add(runningT.intValue(), interdistance); 
+						seriesSpeed.get(i).getSeries(j).add(runningT.intValue(), positions.get(carsId.get(i).get(j)).getSpeed());
 					}
-					seriesSpeed.get(i).get(j).add(runningT.intValue(), positions.get(carsId.get(i).get(j).getSpeed());
+					seriesSpeed.get(i).getSeries(carsId.get(i).size()-1).add(runningT.intValue(), positions.get(carsId.get(i).get(carsId.get(i).size()-1)).getSpeed());
 				}
 				/*for (int j=0; j<series.size();j++) {
 
@@ -487,5 +471,8 @@ public class Environment extends Agent{
 
 	public void printAllTurn(Object selectedItem) {
 		sendMessage(addresses.get(selectedItem), new StringMessage("Print"));
+	}
+	public void printStats(boolean print) {
+		frame.setVisible(print);
 	}
 }
