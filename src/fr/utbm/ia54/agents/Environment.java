@@ -86,7 +86,7 @@ public class Environment extends Agent{
 		frame.setLayout(new GridLayout(2, 0));
 
 		for (int i = 0 ; i < carsId.size(); i++) {
-			//by train we prepare 2 graphics, one for interdistance between cars and the other for cars speed
+			//by train we prepare 2 graphics, one for inter-distance between cars and the other for cars speed
 			
 			XYSeriesCollection dataD = new XYSeriesCollection( );
 			seriesInterD.add(dataD);
@@ -131,65 +131,6 @@ public class Environment extends Agent{
 			ChartPanel panelV = new ChartPanel(xylineChartV);
 			frame.add(panelV);
 		}
-		
-		
-		/*List<XYSeries> series2 = new ArrayList<XYSeries>();
-		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
-		series2.add(train1car2);
-		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
-		series2.add(train1car3);
-		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
-		series2.add(train1car4);
-		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
-		series2.add(train1car5);  
-		XYSeriesCollection data2 = new XYSeriesCollection( );
-		data2.addSeries(train1car2);
-		data2.addSeries(train1car3);
-		data2.addSeries(train1car4);
-		data2.addSeries(train1car5);
-		JFreeChart xylineChart2 = ChartFactory.createXYLineChart(
-		         "interdistance for train1",
-		         "time" ,
-		         "distance from previous car" ,
-		         data2 ,
-		         PlotOrientation.VERTICAL ,
-		         true , true , false);
-		xylineChart2.setBackgroundPaint(Color.gray);
-		//xylineChart2.getPlot().addRangeMarker(new Marker(110, Color.white, new BasicStroke(1), Color.red, 1f));
-		//ChartFrame frame2 = new ChartFrame("INTERDISTANCE TRAIN 2", xylineChart2);
-		//frame2.pack();
-		//frame2.setVisible(true);
-		
-		
-		List<XYSeries> series3 = new ArrayList<XYSeries>();
-		final XYSeries  train1car2 = new XYSeries ( "train1car2" ); 
-		series3.add(train1car2);
-		final XYSeries  train1car3 = new XYSeries ( "train1car3" ); 
-		series3.add(train1car3);
-		final XYSeries  train1car4 = new XYSeries ( "train1car4" ); 
-		series3.add(train1car4);
-		final XYSeries  train1car5 = new XYSeries ( "train1car5" ); 
-		series3.add(train1car5);  
-		XYSeriesCollection data3 = new XYSeriesCollection( );
-		data3.addSeries(train1car2);
-		data3.addSeries(train1car3);
-		data3.addSeries(train1car4);
-		data3.addSeries(train1car5);
-		JFreeChart xylineChart3 = ChartFactory.createXYLineChart(
-		         "interdistance for train1",
-		         "time" ,
-		         "distance from previous car" ,
-		         data3 ,
-		         PlotOrientation.VERTICAL ,
-		         true , true , false);
-		xylineChart3.setBackgroundPaint(Color.gray);
-		
-		
-		
-		ChartPanel panel2 = new ChartPanel(xylineChart2);
-		frame.add(panel2);
-		ChartPanel panel3 = new ChartPanel(xylineChart3);
-		frame.add(panel3);*/
 		
 		frame.pack();
 		frame.setVisible(false);
@@ -269,17 +210,6 @@ public class Environment extends Agent{
 					}
 					seriesSpeed.get(i).getSeries(carsId.get(i).size()-1).add(runningT.intValue(), positions.get(carsId.get(i).get(carsId.get(i).size()-1)).getSpeed());
 				}
-				/*for (int j=0; j<series.size();j++) {
-
-				interdistance = Functions.manhattan(positions.get(carsId.get(0).get(j)),positions.get(carsId.get(0).get(j+1)));
-				series.get(j).add(runningT.intValue(), interdistance); 	
-					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
-				}
-				for (int j=0; j<series2.size();j++) {
-				interdistance = Functions.manhattan(positions.get(carsId.get(1).get(j)),positions.get(carsId.get(1).get(j+1)));
-				series2.get(j).add(runningT.intValue(), interdistance); 	
-					//System.out.println("train"+i+"car"+j+", interD :"+ interdistance);
-				}*/
 			}
 		}
 	}
@@ -304,29 +234,14 @@ public class Environment extends Agent{
 				ObjectMessage<HashMap<String, OrientedPoint>> message = (ObjectMessage<HashMap<String, OrientedPoint>>) m;
 				HashMap<String, OrientedPoint> tmp = message.getContent();
 				//TODO transmit to other group
-				/*if(tmp.get("transfert") != null) {
-					Iterator it = tmp.keySet().iterator();
-					String tmpName = new String();
-					do {
-						tmpName = (String) it.next();
-					}while(tmpName == "transfert");
-					String[] data = tmpName.split(":");
-					HashMap<String, OrientedPoint> tmpData = new HashMap<String, OrientedPoint>();
-					tmpData.put(data[2],tmp.get(tmpName));
-					ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmpData);
-					sendMessage(Const.MY_COMMUNITY, data[0], data[1], msg);
-				} else {*/
-					positions.putAll(tmp);
-					// substring to convert agent network id to network id
-					addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getSender().getAgentNetworkID().length()-2), message.getSender());
-					
-					String address = message.getSender().getAgentNetworkID();
-					String group = message.getSender().getGroup();
-					//System.out.println(address +" has send it's position");
-					if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
-						//System.out.println("adresse : " + address + ", and on stocke : "+ address.substring(0,address.length()-2));
-						carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
-					//}
+				positions.putAll(tmp);
+				// substring to convert agent network id to network id
+				addresses.put(message.getSender().getAgentNetworkID().substring(0, message.getSender().getAgentNetworkID().length()-2), message.getSender());
+				
+				String address = message.getSender().getAgentNetworkID();
+				String group = message.getSender().getGroup();
+				if(!carsId.get(getNumTrain(group)).contains(address.substring(0,address.length()-2))){
+					carsId.get(getNumTrain(group)).add(address.substring(0,address.length()-2));
 				}
 			}
 		}

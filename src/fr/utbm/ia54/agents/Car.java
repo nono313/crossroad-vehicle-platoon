@@ -406,15 +406,17 @@ public class Car extends Agent {
 				if(data[0].equals("speed")) {
 					vToReach = Float.valueOf(data[1]);
 					// correction for train fusion
-					vToReach += (0.01f*position*vToReach);
+					vToReach += (0.1f*position*vToReach);
 					
-					printings += " objective speed is now " + Float.valueOf(data[1]) + "\n";
+					printings += " objective speed is now " + vToReach + "\n";
+					System.out.println(" objective speed is now " + vToReach);
 				}
 				else if(data[0].equals("safe")) {
 					safeD = Integer.valueOf(data[1]);
 					seeD = 3*safeD;
 
-					printings += " Safe distance is now " + Integer.valueOf(data[1]) + "\n";
+					printings += " Safe distance is now " + safeD + "\n";
+					System.out.println(" Safe distance is now " + safeD);
 				} 
 				else if (data[0].equals("crossing")) {
 					String id = new String();
