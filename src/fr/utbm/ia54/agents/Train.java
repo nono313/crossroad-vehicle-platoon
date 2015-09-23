@@ -144,12 +144,12 @@ public class Train extends Agent {
 							broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg);
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
-							System.out.println("another train entered a crossing where train" + numTrain + " is.");
+							System.out.println("Train" + numTrain +": another train entered a crossing");
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
-								System.out.println("...And we are into this crossing");
+								System.out.println("Train" + numTrain +": ...And we are into this crossing");
 								notAloneCrossing.add(dataRetrieved.get(i));
 								changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
 								changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
@@ -161,7 +161,7 @@ public class Train extends Agent {
 							}
 							
 						} else if (i.equals("confirmCrossing")) {
-							System.out.println("So both trains are into the crossing");
+							System.out.println("Train" + numTrain +": So both trains are into the crossing");
 							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));

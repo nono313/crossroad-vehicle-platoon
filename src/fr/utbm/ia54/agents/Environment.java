@@ -104,14 +104,14 @@ public class Environment extends Agent{
 			
 			
 			JFreeChart xylineChartD = ChartFactory.createXYLineChart(
-		         	"interdistance for train0",
+		         	"interdistance for train"+i,
 		         	"time" ,
 		         	"distance from previous car" ,
 		         	dataD,
 		         	PlotOrientation.VERTICAL ,
 		         	true , true , false);
 			JFreeChart xylineChartV = ChartFactory.createXYLineChart(
-		         	"speed for train0",
+		         	"speed for train"+i,
 		         	"time" ,
 		         	"speed of car" ,
 		         	dataV,

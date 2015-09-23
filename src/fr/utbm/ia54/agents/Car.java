@@ -299,8 +299,13 @@ public class Car extends Agent {
 								if(nbEtapes <=0) {
 									nbEtapes=1;
 								}
+								/*
+								 * Method 1 : We brake at the last moment
+								 * +faster
+								 * -more risky, collisions happenend in crossing between cars
+								 */
 								int i = 0;
-								do {
+								/*do {
 									i++;
 								}while (Const.DECC * (Const.PAS/1000.f) * i < diffV );
 								
@@ -309,7 +314,14 @@ public class Car extends Agent {
 								} 
 								else {
 									toSlowVInTrain = 0;
-								}
+								}*/
+								
+								/*
+								 * Method 2 : We continusly brake to get to Vcar-1 at safeD
+								 * we slow a dV each turn (aprox)
+								 */
+								toSlowVInTrain = diffV/(float)nbEtapes;
+								
 							} 
 							else {
 								toSlowVInTrain = 0;
@@ -320,7 +332,7 @@ public class Car extends Agent {
 						
 					
 					if(!closerOutTrain.isEmpty()) {
-							
+						newD = Functions.manhattanCar(neighbours.get(closerOutTrain), tmpPos);	
 						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
 						
 						priority = definePriority(closerOutTrain,neighbours.get(closerOutTrain),cross);
