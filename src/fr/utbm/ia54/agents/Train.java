@@ -37,7 +37,7 @@ public class Train extends Agent {
 	protected void activate() {
 		// initialization
 		speed = 120;
-		crossingSpeed = 60;
+		crossingSpeed = 100;
 		safeD = 2*Const.CAR_SIZE;
 		crossingSafeD = 4*Const.CAR_SIZE;
 		
@@ -151,8 +151,8 @@ public class Train extends Agent {
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								System.out.println("Train" + numTrain +": ...And we are into this crossing");
 								notAloneCrossing.add(dataRetrieved.get(i));
-								changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
-								changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
+								changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
+								//changeCarBehavior(new StringMessage("safeD:"+crossingSafeD));
 								
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
@@ -165,8 +165,8 @@ public class Train extends Agent {
 							//another train have detected collision potential, we adapt speed(safe D) and crossing distance
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));
-							changeCarBehavior(new ObjectMessage<String>("speed:"+crossingSpeed));
-							changeCarBehavior(new ObjectMessage<String>("safeD:"+crossingSafeD));
+							changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
+							//changeCarBehavior(new StringMessage("safeD:"+crossingSafeD));
 							}
 						} else if (i.equals("exitCrossing")) {
 							System.out.println("Train" + numTrain + " is getting out of the crossing");
@@ -174,8 +174,8 @@ public class Train extends Agent {
 							soloCrossing.remove(dataRetrieved.get(i));
 							if(notAloneCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.remove(dataRetrieved.get(i));
-								changeCarBehavior(new ObjectMessage<String>("speed:"+speed));
-								changeCarBehavior(new ObjectMessage<String>("safeD:"+safeD));
+								changeCarBehavior(new StringMessage("speed:"+speed));
+								//changeCarBehavior(new StringMessage("safeD:"+safeD));
 								
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("warningExitCrossing", dataRetrieved.get(i));
@@ -187,8 +187,8 @@ public class Train extends Agent {
 							System.out.println("Train" + numTrain + " is finally alone in the crossing");
 							//we have left the crossing, return to normal state
 							notAloneCrossing.remove(dataRetrieved.get(i));
-							changeCarBehavior(new ObjectMessage<String>("speed:"+speed));
-							changeCarBehavior(new ObjectMessage<String>("safeD:"+safeD));
+							changeCarBehavior(new StringMessage("speed:"+speed));
+							//changeCarBehavior(new StringMessage("safeD:"+safeD));
 						}
 					}
 				} else if (o.getClass().equals(new LinkedList<OrientedPoint>().getClass())) {
@@ -246,6 +246,6 @@ public class Train extends Agent {
 	
 	
 	private void changeCarBehavior(ObjectMessage data) {
-		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data);
+		System.out.println(broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data));
 	}
 }

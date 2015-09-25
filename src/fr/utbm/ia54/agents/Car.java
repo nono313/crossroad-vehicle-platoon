@@ -72,8 +72,8 @@ public class Car extends Agent {
 		pos.setSpeed(10);
 		vToReach=(float) 110;
 		vToReach+= (0.05f*position*vToReach);
-		safeD = 30;
-		seeD = 120;
+		safeD = Const.CAR_SIZE;
+		seeD = 4*Const.CAR_SIZE;
 		
 		knownCars = new HashMap<String, OrientedPoint>();
 		crossCars = new LinkedList<String>();
@@ -332,16 +332,21 @@ public class Car extends Agent {
 						
 					
 					if(!closerOutTrain.isEmpty()) {
-						newD = Functions.manhattanCar(neighbours.get(closerOutTrain), tmpPos);	
-						dToCross = Functions.manhattan(tmpPos, cross)+Const.CAR_SIZE;
+						newD = Functions.manhattanCar(cross, tmpPos);	
+						dToCross = Functions.manhattan(neighbours.get(closerOutTrain), cross)+Const.CAR_SIZE;
 						
 						priority = definePriority(closerOutTrain,neighbours.get(closerOutTrain),cross);
 						
 						if(!priority) {
-							//do we have to reduce speed ?
-							if ((newD+safeD)/neighbours.get(closerOutTrain).getSpeed() > dToCross/newV) {
+							/*do we have to reduce speed ?
+							 YES if the other car won't get out of the crossing before we enter it
+							 	OUR time to get to the crossing > HER time to get over the crossing
+							 
+							 */
+							float tpsOtherCar = (float) (dToCross/neighbours.get(closerOutTrain).getSpeed());
+							if (tpsOtherCar < newD/newV) {
 								//if so by how much ?
-								toSlowVOutTrain =  ((float)((newD+safeD)/neighbours.get(closerOutTrain).getSpeed() - dToCross/newV)/(float)newD);
+								toSlowVOutTrain =  newV - newD/tpsOtherCar;
 							}
 						}
 						else
@@ -418,17 +423,17 @@ public class Car extends Agent {
 				if(data[0].equals("speed")) {
 					vToReach = Float.valueOf(data[1]);
 					// correction for train fusion
-					vToReach += (0.1f*position*vToReach);
+					vToReach += (0.05f*position*vToReach);
 					
 					printings += " objective speed is now " + vToReach + "\n";
-					System.out.println(" objective speed is now " + vToReach);
+					//System.out.println(" objective speed is now " + vToReach);
 				}
-				else if(data[0].equals("safe")) {
+				else if(data[0].equals("safeD")) {
 					safeD = Integer.valueOf(data[1]);
-					seeD = 3*safeD;
+					seeD = 4*safeD;
 
 					printings += " Safe distance is now " + safeD + "\n";
-					System.out.println(" Safe distance is now " + safeD);
+					//System.out.println(" Safe distance is now " + safeD);
 				} 
 				else if (data[0].equals("crossing")) {
 					String id = new String();
@@ -539,7 +544,7 @@ public class Car extends Agent {
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
 		
 		if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
-			//System.out.println("Priorities have become obsoletes for " + this.getName());
+			System.out.println("Priorities have become obsoletes for " + this.getNetworkID());
 			crossCars.clear();
 			refV = newV;
 		}

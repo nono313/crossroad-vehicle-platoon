@@ -71,9 +71,9 @@ public class Environment extends Agent{
 				nb += carsId.get(i).size();
 			}
 		}
-		//TODO Work only for 2 trains
-		menu.addCarList(carsId.get(0));
-		menu.addCarList(carsId.get(1));
+		for(int i=0; i<carsId.size();i++){
+			menu.addCarList(carsId.get(i));
+		}
 
 	/*********************stats*****************************/
 		int interdistance;
