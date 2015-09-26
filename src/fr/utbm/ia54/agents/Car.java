@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.swing.ImageIcon;
 
@@ -74,6 +75,7 @@ public class Car extends Agent {
 		vToReach+= (0.05f*position*vToReach);
 		safeD = Const.CAR_SIZE;
 		seeD = 4*Const.CAR_SIZE;
+		crossingD = safeD;
 		
 		knownCars = new HashMap<String, OrientedPoint>();
 		crossCars = new LinkedList<String>();
@@ -97,10 +99,10 @@ public class Car extends Agent {
 		int place =0;
 		
 		String closerInTrain = null;
-		OrientedPoint closerPosInTrain;
+		OrientedPoint closerPosInTrain = null;
 		float toSlowVInTrain;
 		String closerOutTrain = null;
-		OrientedPoint closerPosOutTrain;
+		OrientedPoint closerPosOutTrain = null;
 		float toSlowVOutTrain;
 		
 		Boolean isInTrain = true;
@@ -176,7 +178,6 @@ public class Car extends Agent {
 				emergencies = inRange(tmpPos, safeD, neighbours);
 				crossings = carPath.getCrossingNear(tmpPos, seeD);
 				
-				
 				/* clean emergencies from conflicts situations
 				IF car is in another train AND out of the cross
 					IF no priority defined
@@ -189,7 +190,7 @@ public class Car extends Agent {
 				
 				printings += "Cars in emergencies : " + emergencies + "\n";
 				
-				if(emergencies != null) {
+				if(emergencies != null && !emergencies.isEmpty()) {
 					Iterator<String> itEmr = emergencies.keySet().iterator();
 					List<String> tmpList = new ArrayList<String>();
 					String carEmr;
@@ -210,6 +211,14 @@ public class Car extends Agent {
 								printings += "We do not remove " + carEmr + " from emergencies, for reasons \n " + getPriority(carEmr);
 								printings += " OR " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 							}
+							else if (!Environment.isInMyTrain(this.getNetworkID(), carEmr) && Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
+								System.out.println("It seems like we have a crash !\n car : " + this.getNetworkID() + " and " + carEmr);
+								printings += "Potential CRASH between car : " + this.getNetworkID() + " and " + carEmr;
+								if(Functions.manhattan(tmpPos,tmpCross)<Functions.manhattan(carPosEmr,tmpCross)) {
+									printings += "exceptionnaly we force out";
+									tmpList.add(carEmr);
+								}
+							}
 						}
 					}
 					for(String i : tmpList) {
@@ -226,10 +235,8 @@ public class Car extends Agent {
 					printings += "Emergencies : on essaie de s'arreter tant bien que mal.\n"; 
 				} 
 				else {
-					//no car "emergencies", which would be too close for safety purposes
-					
-					
-				//TODO multi(>2) trains, not operationnal at ALL. 
+/* NOT MEMERGENCIES, BUT WATCHLIST **********************************/
+				//TODO multi(>2) trains, not operationnal at ALL for that. 
 
 					printings += "No emergencies, we go for neighbors.\n"; 
 					
@@ -243,10 +250,18 @@ public class Car extends Agent {
 						tmpNeighbour = it.next();
 						isInTrain = Environment.isInMyTrain(this.getNetworkID(), tmpNeighbour);
 						if(closerInTrain.isEmpty() && isInTrain) {
-							closerInTrain = Functions.closest(neighbours, tmpPos);
+							closerInTrain = tmpNeighbour;//Functions.closest(neighbours, tmpPos);
 							closerPosInTrain = neighbours.get(closerInTrain);	
 
 							printings += "We have a friend in front.\n"; 
+						}
+						else if (isInTrain) {
+							if (Functions.manhattanCar(tmpPos, closerPosInTrain) > Functions.manhattanCar(tmpPos, neighbours.get(tmpNeighbour))) {
+								closerInTrain = tmpNeighbour;
+								closerPosInTrain = neighbours.get(closerInTrain);	
+
+								printings += "We have a new friend in front.\n"; 
+							}
 						}
 						else if (closerOutTrain.isEmpty() && !isInTrain) {
 							closerPos = neighbours.get(tmpNeighbour);
@@ -273,7 +288,7 @@ public class Car extends Agent {
 											(closerPos.getX()>cross.getX() && closerPos.getOrientation() == Math.toRadians(270))) {
 											closerOutTrain = Functions.closest(neighbours, tmpPos);
 											closerPosOutTrain = neighbours.get(closerOutTrain);
-											
+
 											printings += "We have a car from another train in front.\n";
 										}
 									}
@@ -291,41 +306,42 @@ public class Car extends Agent {
 							newD = Functions.manhattanCar(neighbours.get(closerInTrain), tmpPos);
 							float diffV = (float) (newV - neighbours.get(closerInTrain).getSpeed());
 							
-							if(diffV > 0) {
+							
+							//control of speed
+							//and follow D
+							if(diffV > 0 && newD < crossingD) {
+								toSlowVInTrain = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
+							}
+							else if(diffV > 0) {
 								
-								float margeT = (newD-safeD+10)/newV;
+								float margeT = newD-crossingD/newV;
 								
 								int nbEtapes = (int) (margeT/Const.PAS);
 								if(nbEtapes <=0) {
 									nbEtapes=1;
 								}
 								/*
-								 * Method 1 : We brake at the last moment
-								 * +faster
-								 * -more risky, collisions happenend in crossing between cars
-								 */
-								int i = 0;
-								/*do {
-									i++;
-								}while (Const.DECC * (Const.PAS/1000.f) * i < diffV );
-								
-								if (nbEtapes <= i) {
-									toSlowVInTrain = Const.DECC * (Const.PAS/1000.f);
-								} 
-								else {
-									toSlowVInTrain = 0;
-								}*/
-								
-								/*
 								 * Method 2 : We continusly brake to get to Vcar-1 at safeD
 								 * we slow a dV each turn (aprox)
 								 */
 								toSlowVInTrain = diffV/(float)nbEtapes;
 								
-							} 
+							}
+							else if(newD < crossingD) {
+								//we consider keeping speed difference in 5 turns, if we do get away enough during this time, no brakes.
+								float diffD = diffV*5*Const.PAS;
+								if(diffD + newD < crossingD) {
+									// slow down not enough
+									toSlowVInTrain = (float) (pos.getSpeed() - (Const.DECC * (Const.PAS/1000.f)));
+								}
+								else {
+									toSlowVInTrain = 0;
+								}
+							}
 							else {
 								toSlowVInTrain = 0;
 							}
+							
 						}
 						
 					}
@@ -430,15 +446,15 @@ public class Car extends Agent {
 				}
 				else if(data[0].equals("safeD")) {
 					safeD = Integer.valueOf(data[1]);
-					seeD = 4*safeD;
+					seeD = 3*safeD;
 
 					printings += " Safe distance is now " + safeD + "\n";
-					//System.out.println(" Safe distance is now " + safeD);
+					//System.out.println(" Safe distance is now " + safeD + ", and seeD : " + seeD);
 				} 
 				else if (data[0].equals("crossing")) {
 					String id = new String();
 					try {
-						id = data[2].substring(0, message.getSender().getAgentNetworkID().length()-2);
+						id = data[2];
 					}
 					catch (Exception e) {
 						System.out.println("Error in messaging priority, we get the message" + message.getContent() + " from " + message.getSender() + " we are car : " + this.getNetworkID());
@@ -463,6 +479,7 @@ public class Car extends Agent {
 					}
 				} else if (data[0].equals("crossD")) {
 					crossingD = Integer.valueOf(data[1]);
+					printings += " following distance is now " + crossingD + "\n";
 				}
 				else if (data[0].equals("printPriority")) {
 					String priorities = new String("Priorities of " + this.getName() + " (" + crossCarStatus.size() + ")");
@@ -542,12 +559,12 @@ public class Car extends Agent {
 		}
 
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
-		
-		if ((newV < 0.9*refV || newV > 1.1*refV) && !crossCars.isEmpty()){
+		/*
+		if ((newV < 0.8*refV || newV > 1.2*refV) && !crossCars.isEmpty()){
 			System.out.println("Priorities have become obsoletes for " + this.getNetworkID());
 			crossCars.clear();
 			refV = newV;
-		}
+		}*/
 		
 		moveTo(tmpPos);
 		HashMap<String, OrientedPoint> sendPos = new HashMap<String, OrientedPoint>();
@@ -579,6 +596,7 @@ public class Car extends Agent {
 	}
 	
 	protected boolean definePriority(String car2, OrientedPoint car2Pos, OrientedPoint cross) {
+		//System.out.println(this.getNetworkID() + " tries to state the priority with " + car2 );
 		printings += " We try to reach priority between us and " + car2;
 		int priorityInt;
 		try {
@@ -620,6 +638,7 @@ public class Car extends Agent {
 			crossCarStatus.put(car2, priority);
 		}
 		
+		//System.out.println(this.getNetworkID() + " tries to state the priority with " + car2 + ". Result : " + priority);
 		return priority;
 	}
 	

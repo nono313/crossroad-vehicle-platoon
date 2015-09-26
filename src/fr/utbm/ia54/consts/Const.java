@@ -8,8 +8,8 @@ public class Const {
 	
 	/* Car settings */
 	public static final float 	ACC = 100;
-	public static final float 	DECC = 330;
-	public static final int 	PAS=30;
+	public static final float 	DECC = 300;
+	public static final int 	PAS=35;
 	
 	
 	/* Simulation settings */

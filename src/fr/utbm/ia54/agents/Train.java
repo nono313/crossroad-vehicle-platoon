@@ -36,7 +36,7 @@ public class Train extends Agent {
 	@Override
 	protected void activate() {
 		// initialization
-		speed = 120;
+		speed = 100;
 		crossingSpeed = 100;
 		safeD = 2*Const.CAR_SIZE;
 		crossingSafeD = 4*Const.CAR_SIZE;
@@ -79,8 +79,9 @@ public class Train extends Agent {
 			pause(Const.PAS);
 		}
 		
+		i=0;
 		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("speed:"+speed));
-		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("safe:"+safeD));
+		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("safeD:"+safeD));
 		
 		while(true) {
 			getNewMessages();
@@ -89,6 +90,15 @@ public class Train extends Agent {
 			TODO deal with multiple train
 			TODO deal with train following eachother
 			*/
+			if(i == 200) {
+				System.out.println("test de coordination voitures");
+				changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
+				changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
+			} else if (i== 400) {
+				changeCarBehavior(new StringMessage("speed:"+speed));
+				changeCarBehavior(new StringMessage("crossD:"+safeD));
+			}
+			i++;
 			pause(Const.PAS);
 		}
 	}
@@ -144,7 +154,7 @@ public class Train extends Agent {
 							broadcastMessage(Const.MY_COMMUNITY, Const.TRAIN_ROLE, Const.TRAIN_ROLE, msg);
 						} else if (i.equals("warningCrossing")) {
 							//another train come into a crossing
-							System.out.println("Train" + numTrain +": another train entered a crossing");
+							//System.out.println("Train" + numTrain +": another train entered a crossing");
 							
 							//if we are into the crossing (or coming to it)
 							//we adapt our own speed and crossing distance, and warn the other train
@@ -152,6 +162,7 @@ public class Train extends Agent {
 								System.out.println("Train" + numTrain +": ...And we are into this crossing");
 								notAloneCrossing.add(dataRetrieved.get(i));
 								changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
+								changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
 								//changeCarBehavior(new StringMessage("safeD:"+crossingSafeD));
 								
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
@@ -166,7 +177,7 @@ public class Train extends Agent {
 							if(soloCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.add(dataRetrieved.get(i));
 							changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
-							//changeCarBehavior(new StringMessage("safeD:"+crossingSafeD));
+							changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
 							}
 						} else if (i.equals("exitCrossing")) {
 							System.out.println("Train" + numTrain + " is getting out of the crossing");
@@ -175,7 +186,7 @@ public class Train extends Agent {
 							if(notAloneCrossing.contains(dataRetrieved.get(i))) {
 								notAloneCrossing.remove(dataRetrieved.get(i));
 								changeCarBehavior(new StringMessage("speed:"+speed));
-								//changeCarBehavior(new StringMessage("safeD:"+safeD));
+								changeCarBehavior(new StringMessage("crossD:"+safeD));
 								
 								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("warningExitCrossing", dataRetrieved.get(i));
@@ -188,6 +199,7 @@ public class Train extends Agent {
 							//we have left the crossing, return to normal state
 							notAloneCrossing.remove(dataRetrieved.get(i));
 							changeCarBehavior(new StringMessage("speed:"+speed));
+							changeCarBehavior(new StringMessage("crossD:"+safeD));
 							//changeCarBehavior(new StringMessage("safeD:"+safeD));
 						}
 					}
@@ -245,7 +257,7 @@ public class Train extends Agent {
 	}
 	
 	
-	private void changeCarBehavior(ObjectMessage data) {
+	private void changeCarBehavior(StringMessage data) {
 		System.out.println(broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data));
 	}
 }
