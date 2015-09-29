@@ -36,10 +36,10 @@ public class Train extends Agent {
 	@Override
 	protected void activate() {
 		// initialization
-		speed = 100;
-		crossingSpeed = 100;
-		safeD = 2*Const.CAR_SIZE;
-		crossingSafeD = 4*Const.CAR_SIZE;
+		speed = 120;
+		crossingSpeed = 120;
+		safeD = 3*Const.CAR_SIZE;
+		crossingSafeD = 5*Const.CAR_SIZE;
 		
 		cars = new Car[Const.NB_CAR_BY_TRAIN];
 		numTrain = 0;
@@ -80,8 +80,9 @@ public class Train extends Agent {
 		}
 		
 		i=0;
-		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("speed:"+speed));
-		broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("safeD:"+safeD));
+		changeCarBehavior(new StringMessage("speed:"+speed));
+		changeCarBehavior(new StringMessage("safeD:"+safeD));
+		changeCarBehavior(new StringMessage("crossD:"+safeD));
 		
 		while(true) {
 			getNewMessages();
@@ -90,15 +91,6 @@ public class Train extends Agent {
 			TODO deal with multiple train
 			TODO deal with train following eachother
 			*/
-			if(i == 200) {
-				System.out.println("test de coordination voitures");
-				changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
-				changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
-			} else if (i== 400) {
-				changeCarBehavior(new StringMessage("speed:"+speed));
-				changeCarBehavior(new StringMessage("crossD:"+safeD));
-			}
-			i++;
 			pause(Const.PAS);
 		}
 	}
@@ -163,11 +155,18 @@ public class Train extends Agent {
 								notAloneCrossing.add(dataRetrieved.get(i));
 								changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
 								changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
-								//changeCarBehavior(new StringMessage("safeD:"+crossingSafeD));
 								
-								HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+								/*HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
 								tmp.put("confirmCrossing", dataRetrieved.get(i));
 								ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+								sendMessage(m.getSender(), msg);*/
+								
+								LinkedList<OrientedPoint> carsList = new LinkedList<OrientedPoint>();
+								carsList.add(dataRetrieved.get(i));
+								for(Car j : cars) {
+									carsList.add(j.getPos());
+								}
+								ObjectMessage<LinkedList<OrientedPoint>> msg = new ObjectMessage<LinkedList<OrientedPoint>>(carsList);
 								sendMessage(m.getSender(), msg);
 							}
 							
@@ -179,7 +178,15 @@ public class Train extends Agent {
 							changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
 							changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
 							}
-						} else if (i.equals("exitCrossing")) {
+						} else if (i.equals("enteringCrossing")) {
+							//System.out.println("Train" + numTrain + " is getting into the crossing");
+							//force safe speed
+							if(notAloneCrossing.contains(dataRetrieved.get(i))) {
+								changeCarBehavior(new StringMessage("speed:"+crossingSpeed));
+							}
+						}
+							
+						else if (i.equals("exitCrossing")) {
 							System.out.println("Train" + numTrain + " is getting out of the crossing");
 							//we have left the crossing, return to normal state
 							soloCrossing.remove(dataRetrieved.get(i));
@@ -205,7 +212,14 @@ public class Train extends Agent {
 					}
 				} else if (o.getClass().equals(new LinkedList<OrientedPoint>().getClass())) {
 					ObjectMessage<LinkedList<OrientedPoint>> message = (ObjectMessage<LinkedList<OrientedPoint>>) m;
-					prepareCrossing(message.getContent());
+					LinkedList<OrientedPoint> otherCars = message.getContent();
+					prepareCrossing(otherCars);
+
+					if(soloCrossing.contains(otherCars.peek())) {
+						notAloneCrossing.add(otherCars.peek());
+					}
+					System.out.println("Train" + numTrain +": So both trains are into the crossing");
+					changeCarBehavior(new StringMessage("crossD:"+crossingSafeD));
 				}
 			}
 		}
@@ -215,22 +229,22 @@ public class Train extends Agent {
 		OrientedPoint crossing = otherCars.poll();
 		OrientedPoint firstCar = this.cars[0].getPos();
 		LinkedList<Double> timeLeft = new LinkedList<Double>();
-		Integer firstCarD = Functions.manhattan(firstCar, crossing);
-		Double firstCarDelay = (firstCarD/firstCar.getSpeed());
 		Double minTime = null;
 		Double maxTime = null;
 		Double optimalTime = null;
 		Double adjustSpeed = null;
+		Double firstCarD = (double) Functions.manhattan(firstCar, crossing);
+		Double firstCarDelay = (firstCarD/crossingSpeed);
 		
 		for (OrientedPoint car : otherCars) {
-			timeLeft.push(Functions.manhattan(car, crossing)/car.speed);
+			timeLeft.push((double) (Functions.manhattan(car, crossing)/crossingSpeed));
 		}
 		
 		for (Double timer : timeLeft) {
-			// if closest car in front of our train
+			// if closest car to be in front of our train
 			if(timer < firstCarDelay && (minTime == null ||timer > minTime)) {
 				minTime = timer;
-			// if closest car behind our train's first
+			// if closest car to go behind our train's first
 			} 
 			else if (timer >= firstCarDelay && (maxTime == null || maxTime > timer)) {
 				maxTime = timer;
@@ -238,26 +252,25 @@ public class Train extends Agent {
 		}
 
 		if (maxTime == null) {
-			adjustSpeed = firstCar.getSpeed();
+			adjustSpeed = (double) crossingSpeed;
 		} 
 		else { 
 			if(minTime == null) {
-				optimalTime = maxTime - 2*safeD /firstCar.getSpeed();
+				optimalTime = maxTime - 2*(float)safeD /crossingSpeed;
+				adjustSpeed = (float)(firstCarD + Const.CAR_SIZE)/optimalTime;
 			} 
 			else {
-				optimalTime = minTime + (maxTime - minTime)/3;
+				optimalTime = minTime + (float)safeD /crossingSpeed;
+				adjustSpeed = (float)(firstCarD - Const.CAR_SIZE)/optimalTime;
 			}
-	
-			adjustSpeed = firstCarD/optimalTime;
-			adjustSpeed += (adjustSpeed -firstCar.getSpeed())/100;
-			
-			count = (int) (optimalTime*1000/Const.PAS);
-			broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, new StringMessage("speed:"+adjustSpeed));
+			changeCarBehavior(new StringMessage("speed:"+adjustSpeed));
 		}
 	}
 	
 	
 	private void changeCarBehavior(StringMessage data) {
-		System.out.println(broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data));
+		ReturnCode echo = broadcastMessage(Const.MY_COMMUNITY, group, Const.CAR_ROLE, data);
+		if(!echo.toString().equals("OK"))
+			System.out.println(echo);
 	}
 }

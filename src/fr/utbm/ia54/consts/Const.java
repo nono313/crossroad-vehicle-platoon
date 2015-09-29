@@ -7,7 +7,7 @@ package fr.utbm.ia54.consts;
 public class Const {
 	
 	/* Car settings */
-	public static final float 	ACC = 100;
+	public static final float 	ACC = 200;
 	public static final float 	DECC = 300;
 	public static final int 	PAS=35;
 	

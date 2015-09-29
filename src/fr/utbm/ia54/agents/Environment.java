@@ -48,7 +48,7 @@ public class Environment extends Agent{
 		addresses = new HashMap<String, AgentAddress>();
 		carsId = new ArrayList<List<String>>();
 		String group = new String();
-		beaconRange = 300;
+		beaconRange = 500;
 		
 		for(int i=0; i<Const.NB_TRAIN;i++) {
 			group = Const.SIMU_GROUP+i;
@@ -167,6 +167,20 @@ public class Environment extends Agent{
 					//if the train is checked in, we verify it's still in
 					//TODO : do it when updates of positions fo first and last car
 					if(groups.contains(carGroup)) {
+						/*carId = carsId.get(i).get(0);
+						carPos = positions.get(carId);
+						if(Functions.manhattanCar(carPos,cross) < Const.CAR_SIZE ){
+							//System.out.println("a train in a crossing, great");
+							//we add he train to the cross and alert him
+							HashMap<String, OrientedPoint> tmp = new HashMap<String,OrientedPoint>();
+							tmp.put("enteringCrossing", cross);
+							
+							ObjectMessage<HashMap<String,OrientedPoint>> msg = new ObjectMessage<HashMap<String,OrientedPoint>>(tmp);
+							sendMessage(Const.MY_COMMUNITY, carGroup, Const.TRAIN_ROLE, msg);
+							groups.add(carGroup);
+							map.put(cross,groups);
+						}*/
+						
 						carId = carsId.get(i).get(carsId.get(i).size()-1);
 						carPos = positions.get(carId);
 						//System.out.println("crosspassed : " + carId + ", and " +cross);

@@ -75,7 +75,7 @@ public class Car extends Agent {
 		vToReach+= (0.05f*position*vToReach);
 		safeD = Const.CAR_SIZE;
 		seeD = 4*Const.CAR_SIZE;
-		crossingD = safeD;
+		crossingD = 2*safeD;
 		
 		knownCars = new HashMap<String, OrientedPoint>();
 		crossCars = new LinkedList<String>();
@@ -202,22 +202,22 @@ public class Car extends Agent {
 							printings += "Other car is tested, its "+!Environment.isInMyTrain(this.getNetworkID(), carEmr) +" AND "+Functions.isOutside(carPosEmr, tmpCross);
 							if (!Environment.isInMyTrain(this.getNetworkID(), carEmr) && Functions.isOutside(carPosEmr, tmpCross)) {
 								printings += "not in my train AND outside the crossing;\n";
-								if(definePriority(carEmr,carPosEmr,tmpCross) || Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
+								if((definePriority(carEmr,carPosEmr,tmpCross) /*&& carPosEmr.getSpeed()==0.0*//*|| Functions.isAfter(carPosEmr, tmpCross)*/) || Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
 									tmpList.add(carEmr);
 									printings += "We remove " + carEmr + " from emergencies, for reasons \n " + getPriority(carEmr);
 									printings += "\n " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
-									
 								}
 								printings += "We do not remove " + carEmr + " from emergencies, for reasons \n " + getPriority(carEmr);
 								printings += " OR " + (Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) + "\n";
 							}
 							else if (!Environment.isInMyTrain(this.getNetworkID(), carEmr) && Functions.manhattan(tmpPos,tmpCross)<Const.CAR_SIZE) {
 								System.out.println("It seems like we have a crash !\n car : " + this.getNetworkID() + " and " + carEmr);
+								System.out.println(" out Pirority over : "+carEmr+" is: " + definePriority(carEmr,carPosEmr,tmpCross));
 								printings += "Potential CRASH between car : " + this.getNetworkID() + " and " + carEmr;
-								if(Functions.manhattan(tmpPos,tmpCross)<Functions.manhattan(carPosEmr,tmpCross)) {
+								/*if(Functions.manhattan(tmpPos,tmpCross)<Functions.manhattan(carPosEmr,tmpCross)) {
 									printings += "exceptionnaly we force out";
 									tmpList.add(carEmr);
-								}
+								}*/
 							}
 						}
 					}
@@ -360,10 +360,13 @@ public class Car extends Agent {
 							 
 							 */
 							float tpsOtherCar = (float) (dToCross/neighbours.get(closerOutTrain).getSpeed());
-							if (tpsOtherCar < newD/newV) {
+							if (tpsOtherCar > newD/newV) {
 								//if so by how much ?
-								toSlowVOutTrain =  newV - newD/tpsOtherCar;
+								toSlowVOutTrain =  newD/(tpsOtherCar - newD/newV);
 							}
+							else
+								//TODO : worry about next car to cross over ?
+								toSlowVOutTrain = 0;
 						}
 						else
 							//TODO : worry about next car to cross over ?
@@ -439,7 +442,7 @@ public class Car extends Agent {
 				if(data[0].equals("speed")) {
 					vToReach = Float.valueOf(data[1]);
 					// correction for train fusion
-					vToReach += (0.05f*position*vToReach);
+					vToReach += (0.07f*position*vToReach);
 					
 					printings += " objective speed is now " + vToReach + "\n";
 					//System.out.println(" objective speed is now " + vToReach);
@@ -559,12 +562,12 @@ public class Car extends Agent {
 		}
 
 		printings += " fin des questions, la vitesse definitive, c'est : " + newV + "\n";
-		/*
+		
 		if ((newV < 0.8*refV || newV > 1.2*refV) && !crossCars.isEmpty()){
-			System.out.println("Priorities have become obsoletes for " + this.getNetworkID());
+			//System.out.println("Priorities have become obsoletes for " + this.getNetworkID());
 			crossCars.clear();
 			refV = newV;
-		}*/
+		}
 		
 		moveTo(tmpPos);
 		HashMap<String, OrientedPoint> sendPos = new HashMap<String, OrientedPoint>();
