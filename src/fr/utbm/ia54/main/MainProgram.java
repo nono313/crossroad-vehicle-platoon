@@ -3,6 +3,9 @@ package fr.utbm.ia54.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 import fr.utbm.ia54.agents.Environment;
 import fr.utbm.ia54.agents.Train;
@@ -30,13 +33,17 @@ public class MainProgram extends Agent{
 	 */
 	public static void main(String [] args) throws IOException {
 		
+		Handler handler = new FileHandler("test.log", 1024, 1024); //$NON-NLS-1$
+		Logger.getLogger("").addHandler(handler); //$NON-NLS-1$
+		
 		carPath = new CarPath();
 		
-		/* Build the path to follow by each train */
-		ReadXmlFile read = new ReadXmlFile();		
-		carPath.setPath(read.parse(new File(Const.RESOURCES_DIR+"/circuit7.xml")));
+		carPath.setPath(ReadXmlFile.parse(new File(Const.RESOURCES_DIR+"/circuit7.xml"))); //$NON-NLS-1$
+		
 		Const.NB_TRAIN = carPath.getPath().size();
 		carPath.generateCrossing();
+		
+		//carPath.setBackground(new ImageIcon(Const.RESOURCES_DIR+"/circuit_7.png"));
 		
 		/* Generate GUI */
 		mainFrame = new MainFrame();
@@ -47,6 +54,7 @@ public class MainProgram extends Agent{
 	
 	@Override
     protected void activate() {
+		//logger.info("Starting...");
 
 		// 1 : Create groups
 		for(int i=0; i<Const.NB_TRAIN;i++) {
@@ -73,13 +81,10 @@ public class MainProgram extends Agent{
 
 	@Override
     protected void live() {
+		//System.out.println(this.getClass().getSimpleName()+" is living.");
 		for(int i = 0; i<1 ; i++) {
 			pause(5000);
 		}
-	}
-	
-	@Override
-    protected void end() {
 	}
 	
 	public static MainFrame getMainFrame() {

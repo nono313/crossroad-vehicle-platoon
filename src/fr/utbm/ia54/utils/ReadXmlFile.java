@@ -27,20 +27,21 @@ import java.util.List;
  */
 public class ReadXmlFile {
 	
-	private static final String TRAIN 		= "train";
-	private static final String POINT 		= "point";
-	private static final String X 			= "x";
-	private static final String Y			= "y";
-	private static final String ANGLE 		= "angle";
-	private static final String BACKGROUND 	="background";
+	private static final String TRAIN 		= "train"; //$NON-NLS-1$
+	private static final String POINT 		= "point"; //$NON-NLS-1$
+	private static final String X 			= "x"; //$NON-NLS-1$
+	private static final String Y			= "y"; //$NON-NLS-1$
+	private static final String ANGLE 		= "angle"; //$NON-NLS-1$
+	private static final String BACKGROUND 	="background"; //$NON-NLS-1$
 	
 	/**
 	 * @param xmlFile the file to parse
 	 * @return list containing all path for all trains
 	 */
-	public List<List<OrientedPoint>> parse(File xmlFile) {
+	@SuppressWarnings("boxing")
+	public static List<List<OrientedPoint>> parse(File xmlFile) {
 
-		List<List<OrientedPoint>> list = new ArrayList<List<OrientedPoint>>();
+		List<List<OrientedPoint>> list = new ArrayList<>();
 		int x, y;
 		double angle;
 		
@@ -52,14 +53,14 @@ public class ReadXmlFile {
 			doc.getDocumentElement().normalize();
 			
 			// Set the background
-			MainProgram.getCarPath().setBackground(new ImageIcon(Const.RESOURCES_DIR+"/"+doc.getDocumentElement().getAttribute(BACKGROUND)));
+			MainProgram.getCarPath().setBackground(new ImageIcon(Const.RESOURCES_DIR+"/"+doc.getDocumentElement().getAttribute(BACKGROUND))); //$NON-NLS-1$
 			
 			// Get the trains
 			NodeList trainList = doc.getElementsByTagName(TRAIN);
 
 			for (int i = 0; i < trainList.getLength(); i++) {
 				// Sublist containing the path of a train
-				List<OrientedPoint> trainPath = new ArrayList<OrientedPoint>();
+				List<OrientedPoint> trainPath = new ArrayList<>();
 				Node train = trainList.item(i);
 
 				if (train.getNodeType() == Node.ELEMENT_NODE) {

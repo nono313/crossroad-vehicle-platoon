@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import fr.utbm.ia54.utils.OrientedPoint;
 import fr.utbm.ia54.utils.Functions;
+import fr.utbm.ia54.utils.OrientedPoint;
 
 /**
  * 
@@ -21,12 +21,12 @@ public class CarPath {
 	private ImageIcon background;
 	
 	public CarPath(){
-		this.path = new ArrayList<List<OrientedPoint>>();
-		this.crossing = new ArrayList<OrientedPoint>();
+		this.path = new ArrayList<>();
+		this.crossing = new ArrayList<>();
 	}
 
 	public List<List<OrientedPoint>> getPath() {
-		return path;
+		return this.path;
 	}
 
 	public void setPath(List<List<OrientedPoint>> path) {
@@ -34,11 +34,22 @@ public class CarPath {
 	}
 
 	public ImageIcon getBackground() {
-		return background;
+		return this.background;
 	}
 
 	public void setBackground(ImageIcon background) {
 		this.background = background;
+	}
+	
+	@Override
+	public String toString() {
+		String str = ""; //$NON-NLS-1$
+		for(List<OrientedPoint> a : this.path) {
+			for(OrientedPoint o : a)  {
+				str += o.toString()+"\n"; //$NON-NLS-1$
+			}
+		}
+		return str;
 	}
 	
 	/** 
@@ -46,83 +57,83 @@ public class CarPath {
 	 * compute distance to travel and position, 
 	 * return new position
 	 */
-	public OrientedPoint getNextPoint(OrientedPoint actualP, float distance, int numTrain) {
-		OrientedPoint nextP = new OrientedPoint(actualP);
-		OrientedPoint previousP = null;
+	public OrientedPoint getNextPoint(OrientedPoint actualP, double distance, int numTrain) {
+		OrientedPoint nextPosition = new OrientedPoint(actualP);
+		OrientedPoint previousCorner = null;
 		
-		Iterator<OrientedPoint> it = path.get(numTrain).iterator();
+		Iterator<OrientedPoint> it = this.path.get(numTrain).iterator();
 		
 		// for now we suppose the car is on the road, and we try to find it (between 2 points/corners)
 		while(it.hasNext() && distance > 0) {
-			OrientedPoint p = it.next();
+			OrientedPoint nextCorner = it.next();
 			// we check if the actual position is between supposedP and p
-			if (previousP != null) {
-				if((nextP.x == p.x && Functions.between(previousP.y,p.y,nextP.y))
-						|| (nextP.y == p.y && Functions.between(previousP.x,p.x,nextP.x))) {
+			if (previousCorner != null) {
+				if((nextPosition.x == nextCorner.x && Functions.between(previousCorner.y,nextCorner.y,nextPosition.y))
+						|| (nextPosition.y == nextCorner.y && Functions.between(previousCorner.x,nextCorner.x,nextPosition.x))) {
 					//if we move in y
-					if(previousP.x == p.x) {
+					if(previousCorner.x == nextCorner.x) {
 						//if no needs to rotate
-						if(nextP.y + distance < p.y && nextP.orientation ==Math.PI) {
-							nextP = new OrientedPoint(nextP);
-							nextP.y = (int) (nextP.y + distance);
+						if(nextPosition.y + distance < nextCorner.y && nextPosition.orientation ==Math.PI) {
+							nextPosition = new OrientedPoint(nextPosition);
+							nextPosition.y = nextPosition.y + distance;
 							distance = 0;
 						} 
-						else if (nextP.y - distance > p.y && (nextP.orientation == Math.PI*2 || nextP.orientation == 0)) {
-							nextP = new OrientedPoint(nextP);
-							nextP.y = (int) (nextP.y - distance);
+						else if (nextPosition.y - distance > nextCorner.y && (nextPosition.orientation == Math.PI*2 || nextPosition.orientation == 0)) {
+							nextPosition = new OrientedPoint(nextPosition);
+							nextPosition.y = nextPosition.y - distance;
 							distance = 0;
 						// in case of arriving just on the point	
 						} 
-						else if (nextP.y - distance == p.y || nextP.y + distance == p.y) {
-							nextP = new OrientedPoint(p);
+						else if (nextPosition.y - distance == nextCorner.y || nextPosition.y + distance == nextCorner.y) {
+							nextPosition = new OrientedPoint(nextCorner);
 							distance = 0;
 						} 
 						else { // we need to rotate
-							nextP = new OrientedPoint(p);
-							previousP = p;
-							distance -= Functions.manhattan(nextP, p);
+							nextPosition = new OrientedPoint(nextCorner);
+							previousCorner = nextCorner;
+							distance -= Functions.manhattan(nextPosition, nextCorner);
 						}
 					} 
 					else { // if we move on x
 						// if no needs to rotate
-						if(nextP.x + distance < p.x && nextP.orientation ==Math.PI/2) {
-							nextP = new OrientedPoint(nextP);
-							nextP.x =  (int) (nextP.x + distance);
+						if(nextPosition.x + distance < nextCorner.x && nextPosition.orientation ==Math.PI/2) {
+							nextPosition = new OrientedPoint(nextPosition);
+							nextPosition.x = nextPosition.x + distance;
 							distance = 0;
 						}
-						else if (nextP.x - distance > p.x && nextP.orientation == Math.PI*3/2) {
-							nextP = new OrientedPoint(nextP);
-							nextP.x =  (int) (nextP.x - distance);
+						else if (nextPosition.x - distance > nextCorner.x && nextPosition.orientation == Math.PI*3/2) {
+							nextPosition = new OrientedPoint(nextPosition);
+							nextPosition.x = nextPosition.x - distance;
 							distance = 0;
 							
 						// in case of arriving just on the point	
 						} 
-						else if (nextP.x - distance == p.x || nextP.x + distance == p.x) {
-							nextP = new OrientedPoint(p);
+						else if (nextPosition.x - distance == nextCorner.x || nextPosition.x + distance == nextCorner.x) {
+							nextPosition = new OrientedPoint(nextCorner);
 							distance = 0;
 						
 						} 
 						else { // we need to rotate
-							nextP = new OrientedPoint(p);
-							previousP = p;
-							distance -= Functions.manhattan(nextP, p);
+							nextPosition = new OrientedPoint(nextCorner);
+							previousCorner = nextCorner;
+							distance -= Functions.manhattan(nextPosition, nextCorner);
 						}
 					}
 				} 
 				else {
 					// we continue searching
-					previousP = null;
+					previousCorner = null;
 				}
 				
 			}
 			// we avoid a lot of research by putting away all roads not oriented like the car
-			if(p.orientation == nextP.orientation) {
-				if(p.x == nextP.x || p.y == nextP.y) {
-					previousP = p;
+			if(nextCorner.orientation == nextPosition.orientation) {
+				if(nextCorner.x == nextPosition.x || nextCorner.y == nextPosition.y) {
+					previousCorner = nextCorner;
 				}
 			}
-		}
-		return nextP;
+		}		
+		return nextPosition;
 	}
 	
 	/**
@@ -138,19 +149,19 @@ public class CarPath {
 	 * Set a list containing all the crossing points between trains.
 	 */
 	public void generateCrossing(){
-		List<List<OrientedPoint>> pathCopy = new ArrayList<List<OrientedPoint>>(path); // Copy the path list
-		List<OrientedPoint> current = new ArrayList<OrientedPoint>();
-		List<OrientedPoint> tmp = new ArrayList<OrientedPoint>();
+		List<List<OrientedPoint>> pathCopy = new ArrayList<>(this.path); // Copy the path list
+		List<OrientedPoint> current = new ArrayList<>();
+		List<OrientedPoint> tmp = new ArrayList<>();
 		OrientedPoint startCurrent = new OrientedPoint();
 		OrientedPoint endCurrent = new OrientedPoint();
 		OrientedPoint startTmp = new OrientedPoint();
 		OrientedPoint endTmp = new OrientedPoint();
 		
 		// For all train path
-		for(int i=0;(i+1)<path.size();i++){
+		for(int i=0;(i+1)<this.path.size();i++){
 			current = pathCopy.get(0);
 
-			for(int l=1;l<path.size();l++){
+			for(int l=1;l<this.path.size();l++){
 				tmp = pathCopy.get(l);
 				
 				// Two points by two fixed : we iterate over the whole other path
@@ -184,7 +195,7 @@ public class CarPath {
 	 * @param endTmp
 	 * @return the crossing point or null
 	 */
-	private OrientedPoint isCrossed(OrientedPoint startCurrent, OrientedPoint endCurrent, OrientedPoint startTmp, OrientedPoint endTmp) {
+	private static OrientedPoint isCrossed(OrientedPoint startCurrent, OrientedPoint endCurrent, OrientedPoint startTmp, OrientedPoint endTmp) {
 		OrientedPoint point = new OrientedPoint();
 		
 		// Check if the two lines are perpendicular
@@ -228,13 +239,13 @@ public class CarPath {
 	}
 
 	public List<OrientedPoint> getCrossing() {
-		return crossing;
+		return this.crossing;
 	}
 
 	public ArrayList<OrientedPoint> getCrossingNear(OrientedPoint pos, int range) {
-		ArrayList<OrientedPoint> concerned = new ArrayList<OrientedPoint>();
+		ArrayList<OrientedPoint> concerned = new ArrayList<>();
 		
-		for (OrientedPoint it : crossing) {
+		for (OrientedPoint it : this.crossing) {
 			if(Functions.manhattan(it, pos) <= range) {
 				concerned.add(it);
 			}
@@ -246,19 +257,19 @@ public class CarPath {
 	 * Set a list containing all the crossing points between trains.
 	 */
 	public void getCrossingPoint(){
-		List<List<OrientedPoint>> pathCopy = new ArrayList<List<OrientedPoint>>(path); // Copy the path list
-		List<OrientedPoint> current = new ArrayList<OrientedPoint>();
-		List<OrientedPoint> tmp = new ArrayList<OrientedPoint>();
+		List<List<OrientedPoint>> pathCopy = new ArrayList<>(this.path); // Copy the path list
+		List<OrientedPoint> current = new ArrayList<>();
+		List<OrientedPoint> tmp = new ArrayList<>();
 		OrientedPoint startCurrent = new OrientedPoint();
 		OrientedPoint endCurrent = new OrientedPoint();
 		OrientedPoint startTmp = new OrientedPoint();
 		OrientedPoint endTmp = new OrientedPoint();
 		
 		// For all train path
-		for(int i=0;(i+1)<path.size();i++){
+		for(int i=0;(i+1)<this.path.size();i++){
 			current = pathCopy.get(0);
 
-			for(int l=1;l<path.size();l++){
+			for(int l=1;l<this.path.size();l++){
 				tmp = pathCopy.get(l);
 				
 				// Two points by two fixed : we iterate over the whole other path
@@ -281,7 +292,7 @@ public class CarPath {
 			}
 			pathCopy.remove(0);
 		}
-		System.out.println(crossing);
+		System.out.println(this.crossing);
 	}
 	public void setCrossing(List<OrientedPoint> crossing) {
 		this.crossing = crossing;
@@ -297,8 +308,8 @@ public class CarPath {
 	 * @return
 	 */
 	public boolean isInPath(OrientedPoint carPos, int train, OrientedPoint point, int distance) {
-		Iterator<OrientedPoint> it = path.get(train).iterator();
-		Iterator<OrientedPoint> itbis = path.get(train).iterator();
+		Iterator<OrientedPoint> it = this.path.get(train).iterator();
+		Iterator<OrientedPoint> itbis = this.path.get(train).iterator();
 		boolean found = false;
 		boolean foundCar = false;
 		OrientedPoint previousP = null;
@@ -325,6 +336,7 @@ public class CarPath {
 			{
 				// we check if the actual position is between supposedP and p
 				if (previousP != null) {
+					assert(p!=null);
 					if((point.x == p.x && Functions.between(previousP.y,p.y,point.y))
 							|| (point.y == p.y && Functions.between(previousP.x,p.x,point.x))) {
 						//we found where the car was in the circuit
@@ -351,10 +363,16 @@ public class CarPath {
 				p = it.next();
 				if(!it.hasNext() && distance>0) {
 					it=itbis;
-					System.out.println("one more turn of circuit to search the void");
+					System.out.println("one more turn of circuit to search the void"); //$NON-NLS-1$
 				}
 					
-			}while(it.hasNext() && !found && distance >0);
+			}
+			while(it.hasNext() && !found && distance >0){
+				/**
+				 * @TODO : Voir à quoi ça sert
+				 * Etonnant ça non ?
+				 */
+			}
 		}
 		return found;
 	}

@@ -28,23 +28,25 @@ public class RotateLabel extends JLabel {
     public RotateLabel(ImageIcon icon) {
     	
         super(icon);
+        
         // keep that reference close by
         this.icon=icon;
         // create a save of it in it's original form (lost of data with angles who aren't 0,90,180,270
         this.iconSave = new ImageIcon();
-        iconSave.setImage(icon.getImage());
+        this.iconSave.setImage(icon.getImage());
         
         // fasten the computation of re-drawing
         this.iconBuff = new BufferedImage(
         	    icon.getIconWidth(),
         	    icon.getIconHeight(),
         	    BufferedImage.TYPE_INT_RGB);
-    	Graphics g = iconBuff.createGraphics();
+        
+    	Graphics g = this.iconBuff.createGraphics();
     	icon.paintIcon(null, g, 0,0);
     	g.dispose();
-        	
-    	centerX = icon.getIconWidth() / 2;
-    	centerY = icon.getIconHeight() / 2;
+        	    	
+    	this.centerX = icon.getIconWidth() / 2;
+    	this.centerY = icon.getIconHeight() / 2;
     }
 
     @Override
@@ -53,16 +55,16 @@ public class RotateLabel extends JLabel {
         	if(this.angle == Math.PI*2) {
         		this.angle = 0;
         	}
-	    	BufferedImage imgTemp =  new BufferedImage((int)centerX, (int)centerY, BufferedImage.TYPE_INT_RGB);
+	    	BufferedImage imgTemp =  new BufferedImage((int)this.centerX, (int)this.centerY, BufferedImage.TYPE_INT_RGB);
 	    	Graphics g2 = imgTemp.createGraphics();
-	    	icon.paintIcon(null, g2, 0,0);
+	    	this.icon.paintIcon(null, g2, 0,0);
 	    	g2.dispose();
         
 	    	// rotate the picture of selected angle
-        	AffineTransform transform = AffineTransform.getRotateInstance(angle, centerX, centerY);
-        	angle=0;
+        	AffineTransform transform = AffineTransform.getRotateInstance(this.angle, this.centerX, this.centerY);
+        	this.angle=0;
         	AffineTransformOp transformOp = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-        	icon.setImage(transformOp.filter(iconBuff,null));
+        	this.icon.setImage(transformOp.filter(this.iconBuff,null));
         }
     	super.paintComponent(g);
     }

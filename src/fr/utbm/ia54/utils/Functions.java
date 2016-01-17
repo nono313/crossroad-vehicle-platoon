@@ -18,7 +18,7 @@ public class Functions {
 	 * @param x
 	 * @return
 	 */
-	public static boolean between(int a, int b, int x) {
+	public static boolean between(double a, double b, double x) {
 		if(a<=b) {
 			if(x>=a && x<=b) {
 				return true;
@@ -37,8 +37,8 @@ public class Functions {
 	 * @param b
 	 * @return
 	 */
-	public static int manhattanCar(OrientedPoint a, OrientedPoint b) {
-		int distance = Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
+	public static double manhattanCar(OrientedPoint a, OrientedPoint b) {
+		double distance = manhattan(a,b);
 
 		if(distance > Const.CAR_SIZE) {
 			distance -= Const.CAR_SIZE;
@@ -48,7 +48,7 @@ public class Functions {
 		return distance;
 	}
 	
-	public static int manhattan(OrientedPoint a, OrientedPoint b) {
+	public static double manhattan(OrientedPoint a, OrientedPoint b) {
 		return (Math.abs(a.x-b.x)+ Math.abs(a.y-b.y));
 	}
 
@@ -56,7 +56,7 @@ public class Functions {
 		OrientedPoint tmp = new OrientedPoint(other);
 		
 		// we try to know if the other car is going away or comming, by comparing manhattan of actual pos and virtual one where the other car has moved forward
-		float actualM = manhattanCar(other, we);
+		double actualM = manhattanCar(other, we);
 		if(tmp.orientation == 2*Math.PI || tmp.orientation == 0) {
 			tmp.y--;
 		} else if (tmp.orientation == Math.PI/2){
@@ -69,9 +69,8 @@ public class Functions {
 		
 		if(manhattanCar(tmp, we) > actualM) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	public static boolean sApproche(OrientedPoint car, OrientedPoint tmpPos) {
@@ -98,7 +97,7 @@ public class Functions {
 	}
 	
 
-	public static String closestInTrain(HashMap<String, OrientedPoint> list, OrientedPoint p, int train) {
+	public static String closestInTrain(HashMap<String, OrientedPoint> list, OrientedPoint p) {
 		String closer = new String();
 		int manhC = -1;
 		if(list !=null) {
@@ -118,7 +117,7 @@ public class Functions {
 	}	
 	
 	
-	public static boolean estDerriere(OrientedPoint other, OrientedPoint we) {
+	public static boolean isBehind(OrientedPoint other, OrientedPoint we) {
 		//other is behind we if we moving coordinate > other corresponding coordinate
 		if((we.orientation == 2*Math.PI || we.orientation == 0) && we.y < other.y) {
 			return true;
@@ -137,8 +136,7 @@ public class Functions {
 	public static boolean isOutside(OrientedPoint car, OrientedPoint cross) {
 		if(isBefore(car, cross) || isAfter(car, cross))
 			return true;
-		else 
-			return false;
+		return false;
 	}
 	
 	public static boolean isBefore(OrientedPoint car, OrientedPoint cross) {
